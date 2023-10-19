@@ -1,6 +1,6 @@
 from domain.feature_file import FeatureFile
-from domain.interface.feature_file_repository import IFeatureFileRepository
 from domain.interface.create_file import ICreateFile
+from domain.interface.feature_file_repository import IFeatureFileRepository
 
 
 class CreateFile(ICreateFile):

@@ -11,3 +11,7 @@ class IFeatureFileRepository(ABC):
     @abstractmethod
     def find(self, _id: str) -> IFeatureFile:
         raise NotImplementedError("Subclasses must implement find method")
+
+    @abstractmethod
+    def delete(self, _id: str) -> str:
+        raise NotImplementedError("Subclasses must implement delete method")

@@ -33,17 +33,42 @@ class FeatureFileRepository(IFeatureFileRepository):
     def find(self, _id: str) -> FeatureFile:
         try:
             with self.db.session.begin() as session:
-                result = self.db.session.query(FeatureFile).filter_by(id=_id).first()
+                result = (
+                    session.query(models.FeatureFile)
+                    .filter(models.FeatureFile.id == _id)
+                    .first()
+                )
         except Exception as e:
             raise e
 
-        return FeatureFile(result.id, result.path, result.created_at, result.updated_at)
+        return FeatureFile(
+            None, result.id, result.file_name, result.hash, result.created_at
+        )
 
-    def file_copy(self, feature_file: IFeatureFile) -> None:
+    def delete(self, _id: str) -> str:
+        try:
+            with self.db.session.begin() as session:
+                result = (
+                    session.query(models.FeatureFile)
+                    .filter(models.FeatureFile.id == _id)
+                    .first()
+                )
+                session.delete(result)
+        except Exception as e:
+            raise e
+
+        self.file_delete(
+            FeatureFile(
+                None, result.id, result.file_name, result.hash, result.created_at
+            )
+        )
+        return result.id
+
+    def file_copy(self, feature_file: FeatureFile) -> None:
         src_path = feature_file.src_path
         dst_path = f"{self.repo_dir}/{feature_file.file_id}.csv"
         shutil.copyfile(src_path, dst_path)
 
-    def file_delete(self, feature_file: IFeatureFile) -> None:
+    def file_delete(self, feature_file: FeatureFile) -> None:
         dst_path = f"{self.repo_dir}/{feature_file.file_id}.csv"
         os.remove(dst_path)
