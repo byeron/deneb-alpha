@@ -39,11 +39,16 @@ def get() -> None:
     except RepositoryError as e:
         print(e)
         return
-    for feature_file in feature_files:
-        print(f"ID: {feature_file.file_id}")
-        print(f"\tName: {feature_file.file_name}")
-        # print(f"Hash: {feature_file.hash}")
-        print(f"\tCreated at: {feature_file.created_at}")
+
+    if not feature_files:
+        print("No files registered.")
+        return
+    else:
+        for feature_file in feature_files:
+            print(f"ID: {feature_file.file_id}")
+            print(f"\tName: {feature_file.file_name}")
+            # print(f"Hash: {feature_file.hash}")
+            print(f"\tCreated at: {feature_file.created_at}")
 
 
 @app.command()
