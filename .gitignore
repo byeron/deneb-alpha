@@ -161,3 +161,4 @@ cython_debug/
 
 # uploadsディレクトリの.csvファイルはgit管理しない
 uploads/*.csv
+*.sqlite3
