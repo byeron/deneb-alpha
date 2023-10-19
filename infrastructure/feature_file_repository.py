@@ -20,9 +20,9 @@ class FeatureFileRepository(IFeatureFileRepository):
         except Exception as e:
             raise e
         """
-        self.file_copy(self, feature_file)
+        self.file_copy(feature_file)
 
-        return feature_file.id
+        return feature_file.file_id
 
     def find(self, _id: str) -> FeatureFile:
         try:
@@ -34,10 +34,10 @@ class FeatureFileRepository(IFeatureFileRepository):
         return FeatureFile(result.id, result.path, result.created_at, result.updated_at)
 
     def file_copy(self, feature_file: IFeatureFile) -> None:
-        src_path = feature_file.src_path()
-        dst_path = f"{self.repo_dir}/{feature_file.file_id()}.csv"
+        src_path = feature_file.src_path
+        dst_path = f"{self.repo_dir}/{feature_file.file_id}.csv"
         shutil.copyfile(src_path, dst_path)
 
     def file_delete(self, feature_file: IFeatureFile) -> None:
-        dst_path = f"{self.repo_dir}/{feature_file.file_id()}.csv"
+        dst_path = f"{self.repo_dir}/{feature_file.file_id}.csv"
         os.remove(dst_path)

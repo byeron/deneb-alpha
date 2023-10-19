@@ -20,7 +20,7 @@ def post(path: str):
     )
     container.wire(modules=[sys.modules[__name__]])
     post_file_handler = container.post_file_handler()
-    _id = post_file_handler.run()
+    _id = post_file_handler.run(path)
 
 
 if __name__ == "__main__":

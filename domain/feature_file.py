@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from domain.interface.feature_file import IFeatureFile
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=False)
 class FeatureFile(IFeatureFile):
     _src_path: str
     _file_id: str = None
@@ -55,7 +55,7 @@ class FeatureFile(IFeatureFile):
 
     def _calc_hash(self) -> str:
         hash_md5 = hashlib.md5()
-        with open(self.path, "rb") as f:
+        with open(self._src_path, "rb") as f:
             # Read and update hash in chunks of 4K
             for byte_block in iter(lambda: f.read(4096), b""):
                 hash_md5.update(byte_block)
