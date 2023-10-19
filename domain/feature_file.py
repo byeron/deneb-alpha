@@ -50,6 +50,11 @@ class FeatureFile(IFeatureFile):
         # 新規の構築の場合であることを明示してコンストラクタを呼び出す
         return cls(path)
 
+    @classmethod
+    def from_rebuild(cls, file_id: str, file_name: str, hash: str, created_at: str):
+        # 再構築の場合であることを明示してコンストラクタを呼び出す
+        return cls(None, file_id, file_name, hash, created_at)
+
     def _validate_matrix(self) -> (bool, str):
         return (True, None)  # TODO: implement
 
