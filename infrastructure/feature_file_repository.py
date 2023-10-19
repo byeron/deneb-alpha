@@ -1,13 +1,14 @@
 import os
 import shutil
 
+import sqlalchemy
+
 from domain.feature_file import FeatureFile
 from domain.interface.feature_file import IFeatureFile
 from domain.interface.feature_file_repository import IFeatureFileRepository
 from domain.interface.session_handler import ISessionHandler
+from infrastructure.error import ErrCode, RepositoryError
 from infrastructure.model import models
-from infrastructure.error import RepositoryError, ErrCode
-import sqlalchemy
 
 
 class FeatureFileRepository(IFeatureFileRepository):
@@ -57,9 +58,7 @@ class FeatureFileRepository(IFeatureFileRepository):
             raise RepositoryError(str(e))
 
         return [
-            FeatureFile.from_rebuild(
-                r.id, r.file_name, r.hash, r.created_at
-            ) 
+            FeatureFile.from_rebuild(r.id, r.file_name, r.hash, r.created_at)
             for r in result
         ]
 

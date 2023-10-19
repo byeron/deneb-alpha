@@ -1,4 +1,5 @@
-from dependency_injector import providers, containers
+from dependency_injector import containers, providers
+
 from infrastructure.feature_file_repository import FeatureFileRepository
 from infrastructure.session_handler import SessionHandler
 from usecase.read_files import ReadFiles
