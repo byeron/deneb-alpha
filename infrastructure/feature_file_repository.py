@@ -5,6 +5,7 @@ from domain.feature_file import FeatureFile
 from domain.interface.feature_file import IFeatureFile
 from domain.interface.feature_file_repository import IFeatureFileRepository
 from domain.interface.session_handler import ISessionHandler
+from infrastructure.model import models
 
 
 class FeatureFileRepository(IFeatureFileRepository):
@@ -13,13 +14,18 @@ class FeatureFileRepository(IFeatureFileRepository):
         self.repo_dir = repo_dir
 
     def save(self, feature_file: IFeatureFile) -> str:
-        """
         try:
             with self.db.session.begin() as session:
-                self.db.session.add(feature_file)
+                session.add(
+                    models.FeatureFile(
+                        id=feature_file.file_id,
+                        file_name=feature_file.file_name,
+                        hash=feature_file.hash,
+                        created_at=feature_file.created_at,
+                    )
+                )
         except Exception as e:
             raise e
-        """
         self.file_copy(feature_file)
 
         return feature_file.file_id

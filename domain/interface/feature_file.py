@@ -13,3 +13,15 @@ class IFeatureFile(ABC):
     @abstractmethod
     def file_id(self) -> str:
         raise NotImplementedError("Subclasses must implement id method")
+
+    @abstractmethod
+    def file_name(self) -> str:
+        raise NotImplementedError("Subclasses must implement file_name method")
+
+    @abstractmethod
+    def hash(self) -> str:
+        raise NotImplementedError("Subclasses must implement hash method")
+
+    @abstractmethod
+    def created_at(self) -> str:
+        raise NotImplementedError("Subclasses must implement created_at method")

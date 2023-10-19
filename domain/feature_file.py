@@ -68,3 +68,15 @@ class FeatureFile(IFeatureFile):
     @property
     def file_id(self) -> str:
         return self._file_id
+
+    @property
+    def file_name(self) -> str:
+        return self._file_name
+
+    @property
+    def hash(self) -> str:
+        return self._hash
+
+    @property
+    def created_at(self) -> str:
+        return self._created_at

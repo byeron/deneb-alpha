@@ -6,6 +6,6 @@ from infrastructure.model.base import Base
 class FeatureFile(Base):
     __tablename__ = "feature_files"
     id = Column(String, unique=True, primary_key=True)
-    filename = Column(String, nullable=False)
+    file_name = Column(String, nullable=False)
     hash = Column(String, nullable=False, unique=True)
     created_at = Column(String, nullable=False)
