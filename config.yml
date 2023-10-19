@@ -1,2 +1,2 @@
-sqlite_url: sqlite:///./app_db.sqlite3
+url: sqlite:///./app_db.sqlite3
 repo_dir: ./uploads
