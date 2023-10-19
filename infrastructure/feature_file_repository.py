@@ -6,6 +6,8 @@ from domain.interface.feature_file import IFeatureFile
 from domain.interface.feature_file_repository import IFeatureFileRepository
 from domain.interface.session_handler import ISessionHandler
 from infrastructure.model import models
+from infrastructure.error import RepositoryError, ErrCode
+import sqlalchemy
 
 
 class FeatureFileRepository(IFeatureFileRepository):
@@ -24,8 +26,10 @@ class FeatureFileRepository(IFeatureFileRepository):
                         created_at=feature_file.created_at,
                     )
                 )
+        except sqlalchemy.exc.IntegrityError as e:
+            raise RepositoryError(str(e), ErrCode.DUPLICATE_FILE)
         except Exception as e:
-            raise e
+            raise RepositoryError(str(e))
         self.file_copy(feature_file)
 
         return feature_file.file_id
@@ -41,9 +45,23 @@ class FeatureFileRepository(IFeatureFileRepository):
         except Exception as e:
             raise e
 
-        return FeatureFile(
-            None, result.id, result.file_name, result.hash, result.created_at
+        return FeatureFile.from_rebuild(
+            result.id, result.file_name, result.hash, result.created_at
         )
+
+    def find_all(self) -> list[FeatureFile]:
+        try:
+            with self.db.session() as session:
+                result = session.query(models.FeatureFile).all()
+        except Exception as e:
+            raise RepositoryError(str(e))
+
+        return [
+            FeatureFile.from_rebuild(
+                r.id, r.file_name, r.hash, r.created_at
+            ) 
+            for r in result
+        ]
 
     def delete(self, _id: str) -> str:
         try:
@@ -54,12 +72,14 @@ class FeatureFileRepository(IFeatureFileRepository):
                     .first()
                 )
                 session.delete(result)
+        except sqlalchemy.orm.exc.UnmappedInstanceError as e:
+            raise RepositoryError(str(e), ErrCode.UNMAPPED_INSTANCE)
         except Exception as e:
-            raise e
+            raise RepositoryError(str(e))
 
         self.file_delete(
-            FeatureFile(
-                None, result.id, result.file_name, result.hash, result.created_at
+            FeatureFile.from_rebuild(
+                result.id, result.file_name, result.hash, result.created_at
             )
         )
         return result.id
