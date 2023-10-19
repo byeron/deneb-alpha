@@ -9,5 +9,5 @@ class PostFile(IPostFile):
 
     def run(self, path: str) -> str:  # _id
         feature_file = FeatureFile.from_new(path)
-        _id = self.file_repo.save(feature_file)
+        _id = self.repo.save(feature_file)
         return _id
