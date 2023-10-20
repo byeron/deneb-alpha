@@ -1,6 +1,7 @@
+from statsmodels.stats.multitest import multipletests
+
 from domain.interface.multipletest import IMultipletest
 from domain.interface.multipletest_config import IMultipletestConfig
-from statsmodels.stats.multitest import multipletests
 
 
 class Multipletest(IMultipletest):

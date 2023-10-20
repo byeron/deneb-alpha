@@ -2,9 +2,9 @@ import sys
 
 import typer_cloup as typer
 
-from container.register_file import RegisterFileContainer
 from container.delete_file import DeleteFileContainer
 from container.get_files import GetFilesContainer
+from container.register_file import RegisterFileContainer
 
 app = typer.Typer()
 

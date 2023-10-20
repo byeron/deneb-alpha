@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+
 from domain.interface.feature_data_repository import IFeatureDataRepository
 
 

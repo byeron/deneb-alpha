@@ -1,7 +1,8 @@
+from scipy.stats import f
+
+from domain.feature_data import FeatureData
 from domain.interface.fluctuation_config import IFluctuationConfig
 from usecase.fluctuation import Fluctuation
-from domain.feature_data import FeatureData
-from scipy.stats import f
 
 
 class Ftest(Fluctuation):

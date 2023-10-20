@@ -9,7 +9,6 @@ from domain.interface.feature_data_repository import IFeatureDataRepository
 from domain.interface.session_handler import ISessionHandler
 from infrastructure.error import ErrCode, RepositoryError
 from infrastructure.model import models
-from domain.feature_data import FeatureData
 
 
 class FeatureDataRepository(IFeatureDataRepository):
@@ -50,7 +49,11 @@ class FeatureDataRepository(IFeatureDataRepository):
             raise RepositoryError(_id, ErrCode.NOT_FOUND)
 
         return FeatureData.from_rebuild(
-            result.id, result.file_name, result.hash, result.created_at, f"{self.repo_dir}/{result.id}.csv",
+            result.id,
+            result.file_name,
+            result.hash,
+            result.created_at,
+            f"{self.repo_dir}/{result.id}.csv",
         )
 
     def find_all(self) -> list[FeatureData]:
@@ -61,7 +64,9 @@ class FeatureDataRepository(IFeatureDataRepository):
             raise RepositoryError(str(e))
 
         return [
-            FeatureData.from_rebuild(r.id, r.file_name, r.hash, r.created_at, f"{self.repo_dir}/{r.id}.csv")
+            FeatureData.from_rebuild(
+                r.id, r.file_name, r.hash, r.created_at, f"{self.repo_dir}/{r.id}.csv"
+            )
             for r in result
         ]
 
@@ -81,7 +86,11 @@ class FeatureDataRepository(IFeatureDataRepository):
 
         self.file_delete(
             FeatureData.from_rebuild(
-                result.id, result.file_name, result.hash, result.created_at, f"{self.repo_dir}/{result.id}.csv",
+                result.id,
+                result.file_name,
+                result.hash,
+                result.created_at,
+                f"{self.repo_dir}/{result.id}.csv",
             )
         )
         return result.id

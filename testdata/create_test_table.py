@@ -1,6 +1,5 @@
-import pandas as pd
 import numpy as np
-
+import pandas as pd
 
 if __name__ == "__main__":
     # 60 x 30 の乱数行列を生成

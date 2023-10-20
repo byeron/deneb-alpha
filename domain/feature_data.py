@@ -4,8 +4,9 @@ import os
 import uuid
 from dataclasses import dataclass
 
-from domain.interface.feature_data import IFeatureData
 import pandas as pd
+
+from domain.interface.feature_data import IFeatureData
 
 
 @dataclass(frozen=False)
@@ -44,7 +45,9 @@ class FeatureData(IFeatureData):
             self._created_at = now.strftime("%Y-%m-%d %H:%M:%S")
 
             # set matrix
-            self._matrix = pd.read_csv(self._src_path, index_col=0, header=0, encoding="utf-8")
+            self._matrix = pd.read_csv(
+                self._src_path, index_col=0, header=0, encoding="utf-8"
+            )
         else:
             # 再構築の場合
             # バリデーションはしない
@@ -56,7 +59,9 @@ class FeatureData(IFeatureData):
         return cls(path)
 
     @classmethod
-    def from_rebuild(cls, file_id: str, file_name: str, hash: str, created_at: str, path: str):
+    def from_rebuild(
+        cls, file_id: str, file_name: str, hash: str, created_at: str, path: str
+    ):
         # 再構築の場合であることを明示してコンストラクタを呼び出す
         df = pd.read_csv(path, index_col=0, header=0, encoding="utf-8")
         return cls(None, file_id, file_name, hash, created_at, df)
