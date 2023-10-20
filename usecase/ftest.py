@@ -1,5 +1,7 @@
 from domain.interface.fluctuation_config import IFluctuationConfig
 from usecase.fluctuation import Fluctuation
+from domain.feature_data import FeatureData
+from scipy.stats import f
 
 
 class Ftest(Fluctuation):
@@ -19,9 +21,17 @@ class Ftest(Fluctuation):
         self.experiment = self.config.experiment
         self.alpha = self.config.alpha
 
-    def run(self):
-        print("Ftest.run()")
-        print(
-            f"control: {self.control}, experiment: {self.experiment}, alpha: {self.alpha}"
-        )
-        return [[0.1, 0.2, 0.3], [True, False, True]]
+    def run(self, feature_data: FeatureData):
+        df = feature_data.matrix
+
+        control = df.loc[self.control, :]
+        experiment = df.loc[self.experiment, :]
+
+        # Calculate F-value
+        control_var = control.var(ddof=1, axis=0)
+        experiment_var = experiment.var(ddof=1, axis=0)
+        f_value = experiment_var / control_var
+        p_value = f.sf(f_value, dfn=(len(experiment) - 1), dfd=(len(control) - 1))
+        reject = [p_value < self.alpha for p_value in p_value]
+
+        return (p_value, reject)
