@@ -2,13 +2,13 @@ from dependency_injector import containers, providers
 
 from infrastructure.feature_file_repository import FeatureFileRepository
 from infrastructure.session_handler import SessionHandler
-from usecase.create_file import CreateFile
+from usecase.register_file import RegisterFile
 
 
-class CreateFileContainer(containers.DeclarativeContainer):
+class RegisterFileContainer(containers.DeclarativeContainer):
     config = providers.Configuration()
     session_handler = providers.Factory(SessionHandler, url=config.url)
     repository = providers.Factory(
         FeatureFileRepository, db=session_handler, repo_dir=config.repo_dir
     )
-    create_file_handler = providers.Factory(CreateFile, repo=repository)
+    handler = providers.Factory(RegisterFile, repo=repository)

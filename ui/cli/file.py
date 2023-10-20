@@ -2,7 +2,7 @@ import sys
 
 import typer_cloup as typer
 
-from container.create_file import CreateFileContainer
+from container.register_file import RegisterFileContainer
 from container.delete_file import DeleteFileContainer
 from container.read_files import ReadFilesContainer
 from infrastructure.error import RepositoryError
@@ -12,7 +12,7 @@ app = typer.Typer()
 
 @app.command()
 def register(path: str) -> None:
-    container = CreateFileContainer()
+    container = RegisterFileContainer()
     container.config.from_yaml("config.yml")  # URL/REPO_DIR
     container.config.from_dict(
         {
@@ -20,7 +20,7 @@ def register(path: str) -> None:
         }
     )
     container.wire(modules=[sys.modules[__name__]])
-    create_file_handler = container.create_file_handler()
+    create_file_handler = container.handler()
     try:
         _id = create_file_handler.run(path)
     except RepositoryError as e:

@@ -1,9 +1,9 @@
 from domain.feature_file import FeatureFile
-from domain.interface.create_file import ICreateFile
+from domain.interface.register_file import IRegisterFile
 from domain.interface.feature_file_repository import IFeatureFileRepository
 
 
-class CreateFile(ICreateFile):
+class RegisterFile(IRegisterFile):
     def __init__(self, repo: IFeatureFileRepository) -> None:
         self.repo = repo
 
