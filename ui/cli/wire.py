@@ -1,9 +1,9 @@
 import sys
+from enum import Enum, auto
 
 from container.fluctuation import FtestContainer, MultipletestContiner
 from container.get_file import GetFileContainer
 
-from enum import Enum, auto
 
 class FluctuationMethod(Enum):
     FTEST = auto()

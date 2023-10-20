@@ -2,7 +2,7 @@ import sys
 
 import typer_cloup as typer
 
-from ui.cli.wire import WireFluctuation, FluctuationMethod
+from ui.cli.wire import FluctuationMethod, WireFluctuation
 
 # Default parameters for correction_input
 featuredata_input = {"id": None}
@@ -38,7 +38,6 @@ def ftest(
             alpha=alpha,
             multipletest=correction_input["multipletest"],
             multipletest_method=correction_input["method"],
-
         )
         feature_data = wired.get_file_handler.run(featuredata_input["id"])
         pvals, reject = wired.fluctuation_handler.run(feature_data)
