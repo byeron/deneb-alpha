@@ -3,62 +3,63 @@ import shutil
 
 import sqlalchemy
 
-from domain.feature_file import FeatureFile
-from domain.interface.feature_file import IFeatureFile
-from domain.interface.feature_file_repository import IFeatureFileRepository
+from domain.feature_data import FeatureData
+from domain.interface.feature_data import IFeatureData
+from domain.interface.feature_data_repository import IFeatureDataRepository
 from domain.interface.session_handler import ISessionHandler
 from infrastructure.error import ErrCode, RepositoryError
 from infrastructure.model import models
+from domain.feature_data import FeatureData
 
 
-class FeatureFileRepository(IFeatureFileRepository):
+class FeatureDataRepository(IFeatureDataRepository):
     def __init__(self, db: ISessionHandler, repo_dir: str) -> None:
         self.db = db
         self.repo_dir = repo_dir
 
-    def save(self, feature_file: IFeatureFile) -> str:
+    def save(self, feature_data: IFeatureData) -> str:
         try:
             with self.db.session.begin() as session:
                 session.add(
-                    models.FeatureFile(
-                        id=feature_file.file_id,
-                        file_name=feature_file.file_name,
-                        hash=feature_file.hash,
-                        created_at=feature_file.created_at,
+                    models.FeatureData(
+                        id=feature_data.file_id,
+                        file_name=feature_data.file_name,
+                        hash=feature_data.hash,
+                        created_at=feature_data.created_at,
                     )
                 )
         except sqlalchemy.exc.IntegrityError as e:
             raise RepositoryError(str(e), ErrCode.DUPLICATE_FILE)
         except Exception as e:
             raise RepositoryError(str(e))
-        self.file_copy(feature_file)
 
-        return feature_file.file_id
+        self.file_copy(feature_data)
+        return feature_data.file_id
 
-    def find(self, _id: str) -> FeatureFile:
+    def find(self, _id: str) -> FeatureData:
         try:
             with self.db.session() as session:
                 result = (
-                    session.query(models.FeatureFile)
-                    .filter(models.FeatureFile.id == _id)
+                    session.query(models.FeatureData)
+                    .filter(models.FeatureData.id == _id)
                     .first()
                 )
         except Exception as e:
             raise e
 
-        return FeatureFile.from_rebuild(
-            result.id, result.file_name, result.hash, result.created_at
+        return FeatureData.from_rebuild(
+            result.id, result.file_name, result.hash, result.created_at, f"{self.repo_dir}/{result.id}.csv",
         )
 
-    def find_all(self) -> list[FeatureFile]:
+    def find_all(self) -> list[FeatureData]:
         try:
             with self.db.session() as session:
-                result = session.query(models.FeatureFile).all()
+                result = session.query(models.FeatureData).all()
         except Exception as e:
             raise RepositoryError(str(e))
 
         return [
-            FeatureFile.from_rebuild(r.id, r.file_name, r.hash, r.created_at)
+            FeatureData.from_rebuild(r.id, r.file_name, r.hash, r.created_at, f"{self.repo_dir}/{r.id}.csv")
             for r in result
         ]
 
@@ -66,8 +67,8 @@ class FeatureFileRepository(IFeatureFileRepository):
         try:
             with self.db.session.begin() as session:
                 result = (
-                    session.query(models.FeatureFile)
-                    .filter(models.FeatureFile.id == _id)
+                    session.query(models.FeatureData)
+                    .filter(models.FeatureData.id == _id)
                     .first()
                 )
                 session.delete(result)
@@ -77,17 +78,17 @@ class FeatureFileRepository(IFeatureFileRepository):
             raise RepositoryError(str(e))
 
         self.file_delete(
-            FeatureFile.from_rebuild(
-                result.id, result.file_name, result.hash, result.created_at
+            FeatureData.from_rebuild(
+                result.id, result.file_name, result.hash, result.created_at, f"{self.repo_dir}/{result.id}.csv",
             )
         )
         return result.id
 
-    def file_copy(self, feature_file: FeatureFile) -> None:
+    def file_copy(self, feature_file: FeatureData) -> None:
         src_path = feature_file.src_path
         dst_path = f"{self.repo_dir}/{feature_file.file_id}.csv"
         shutil.copyfile(src_path, dst_path)
 
-    def file_delete(self, feature_file: FeatureFile) -> None:
+    def file_delete(self, feature_file: FeatureData) -> None:
         dst_path = f"{self.repo_dir}/{feature_file.file_id}.csv"
         os.remove(dst_path)

@@ -4,16 +4,18 @@ import os
 import uuid
 from dataclasses import dataclass
 
-from domain.interface.feature_file import IFeatureFile
+from domain.interface.feature_data import IFeatureData
+import pandas as pd
 
 
 @dataclass(frozen=False)
-class FeatureFile(IFeatureFile):
+class FeatureData(IFeatureData):
     _src_path: str
     _file_id: str = None
     _file_name: str = None
     _hash: str = None
     _created_at: str = None
+    _matrix: pd.DataFrame = None
 
     def __post_init__(self):
         if self._src_path is not None:
@@ -40,6 +42,9 @@ class FeatureFile(IFeatureFile):
             # set created_at
             now = datetime.datetime.now()
             self._created_at = now.strftime("%Y-%m-%d %H:%M:%S")
+
+            # set matrix
+            self._matrix = pd.read_csv(self._src_path, index_col=0, header=0, encoding="utf-8")
         else:
             # 再構築の場合
             # バリデーションはしない
@@ -51,9 +56,10 @@ class FeatureFile(IFeatureFile):
         return cls(path)
 
     @classmethod
-    def from_rebuild(cls, file_id: str, file_name: str, hash: str, created_at: str):
+    def from_rebuild(cls, file_id: str, file_name: str, hash: str, created_at: str, path: str):
         # 再構築の場合であることを明示してコンストラクタを呼び出す
-        return cls(None, file_id, file_name, hash, created_at)
+        df = pd.read_csv(path, index_col=0, header=0, encoding="utf-8")
+        return cls(None, file_id, file_name, hash, created_at, df)
 
     def _validate_matrix(self) -> (bool, str):
         return (True, None)  # TODO: implement
@@ -85,3 +91,7 @@ class FeatureFile(IFeatureFile):
     @property
     def created_at(self) -> str:
         return self._created_at
+
+    @property
+    def matrix(self) -> pd.DataFrame:
+        return self._matrix

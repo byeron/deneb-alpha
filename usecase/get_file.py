@@ -1,11 +1,11 @@
-from domain.interface.feature_file_repository import IFeatureFileRepository
+from domain.interface.feature_data_repository import IFeatureDataRepository
 from domain.interface.get_file import IGetFile
-from domain.feature_file import FeatureFile
+from domain.feature_data import FeatureData
 
 
 class GetFile(IGetFile):
-    def __init__(self, repo: IFeatureFileRepository) -> None:
+    def __init__(self, repo: IFeatureDataRepository) -> None:
         self.repo = repo
 
-    def run(self, _id: str) -> FeatureFile:
+    def run(self, _id: str) -> FeatureData:
         return self.repo.find(_id)

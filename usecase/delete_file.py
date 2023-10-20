@@ -1,9 +1,9 @@
 from domain.interface.delete_file import IDeleteFile
-from domain.interface.feature_file_repository import IFeatureFileRepository
+from domain.interface.feature_data_repository import IFeatureDataRepository
 
 
 class DeleteFile(IDeleteFile):
-    def __init__(self, repo: IFeatureFileRepository) -> None:
+    def __init__(self, repo: IFeatureDataRepository) -> None:
         self.repo = repo
 
     def run(self, _id: str) -> str:  # _id

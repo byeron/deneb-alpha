@@ -1,19 +1,19 @@
 from abc import ABC, abstractmethod
 
-from domain.interface.feature_file import IFeatureFile
+from domain.interface.feature_data import IFeatureData
 
 
-class IFeatureFileRepository(ABC):
+class IFeatureDataRepository(ABC):
     @abstractmethod
-    def save(self, feature_file: IFeatureFile) -> str:
+    def save(self, feature_file: IFeatureData) -> str:
         raise NotImplementedError("Subclasses must implement save method")
 
     @abstractmethod
-    def find(self, _id: str) -> IFeatureFile:
+    def find(self, _id: str) -> IFeatureData:
         raise NotImplementedError("Subclasses must implement find method")
 
     @abstractmethod
-    def find_all(self) -> list[IFeatureFile]:
+    def find_all(self) -> list[IFeatureData]:
         raise NotImplementedError("Subclasses must implement find_all method")
 
     @abstractmethod
