@@ -37,7 +37,7 @@ class FeatureFileRepository(IFeatureFileRepository):
 
     def find(self, _id: str) -> FeatureFile:
         try:
-            with self.db.session.begin() as session:
+            with self.db.session() as session:
                 result = (
                     session.query(models.FeatureFile)
                     .filter(models.FeatureFile.id == _id)
