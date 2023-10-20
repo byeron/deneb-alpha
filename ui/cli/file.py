@@ -4,8 +4,7 @@ import typer_cloup as typer
 
 from container.register_file import RegisterFileContainer
 from container.delete_file import DeleteFileContainer
-from container.read_files import ReadFilesContainer
-from infrastructure.error import RepositoryError
+from container.get_files import GetFilesContainer
 
 app = typer.Typer()
 
@@ -20,10 +19,10 @@ def register(path: str) -> None:
         }
     )
     container.wire(modules=[sys.modules[__name__]])
-    create_file_handler = container.handler()
+    register_file_handler = container.handler()
     try:
-        _id = create_file_handler.run(path)
-    except RepositoryError as e:
+        _id = register_file_handler.run(path)
+    except Exception as e:
         print(e)
         return
     print(f"File ID: {_id}")
@@ -31,12 +30,12 @@ def register(path: str) -> None:
 
 @app.command()
 def get() -> None:
-    container = ReadFilesContainer()
+    container = GetFilesContainer()
     container.config.from_yaml("config.yml")
-    read_files_handler = container.read_files_handler()
+    get_files_handler = container.handler()
     try:
-        feature_files = read_files_handler.run()
-    except RepositoryError as e:
+        feature_files = get_files_handler.run()
+    except Exception as e:
         print(e)
         return
 
@@ -58,7 +57,7 @@ def delete(file_id: str) -> None:
     delete_file_handler = container.delete_file_handler()
     try:
         _id = delete_file_handler.run(file_id)
-    except RepositoryError as e:
+    except Exception as e:
         print(e)
         return
     print(f"File ID: {_id}")
