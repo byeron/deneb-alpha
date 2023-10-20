@@ -1,9 +1,9 @@
 from domain.feature_file import FeatureFile
 from domain.interface.feature_file_repository import IFeatureFileRepository
-from domain.interface.read_files import IReadFiles
+from domain.interface.get_files import IGetFiles
 
 
-class ReadFiles(IReadFiles):
+class GetFiles(IGetFiles):
     def __init__(self, repo: IFeatureFileRepository) -> None:
         self.repo = repo
 
