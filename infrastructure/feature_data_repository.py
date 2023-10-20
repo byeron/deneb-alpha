@@ -45,7 +45,9 @@ class FeatureDataRepository(IFeatureDataRepository):
                     .first()
                 )
         except Exception as e:
-            raise e
+            raise RepositoryError(str(e))
+        if result is None:
+            raise RepositoryError(_id, ErrCode.NOT_FOUND)
 
         return FeatureData.from_rebuild(
             result.id, result.file_name, result.hash, result.created_at, f"{self.repo_dir}/{result.id}.csv",
