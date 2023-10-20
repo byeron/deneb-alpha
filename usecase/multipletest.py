@@ -1,5 +1,6 @@
 from domain.interface.multipletest import IMultipletest
 from domain.interface.multipletest_config import IMultipletestConfig
+from statsmodels.stats.multitest import multipletests
 
 
 class Multipletest(IMultipletest):
@@ -15,7 +16,11 @@ class Multipletest(IMultipletest):
 
     def run(
         self, pvalues: list[float]
-    ) -> list[list[float], list[bool]]:  # P-Values, Rejected
-        print("Multipletest.run()")
-        print(f"method: {self.method}, alpha: {self.alpha}")
-        return [[0.1, 0.2, 0.3], [True, False, True]]
+    ) -> tuple[list[float], list[bool]]:  # P-Values, Rejected
+        reject, pvals_corrected, _, _ = multipletests(
+            pvalues, alpha=self.alpha, method=self.method
+        )
+        # cast to primitive data type
+        reject = [bool(r) for r in reject]
+        pvals_corrected = [float(p) for p in pvals_corrected]
+        return (pvals_corrected, reject)

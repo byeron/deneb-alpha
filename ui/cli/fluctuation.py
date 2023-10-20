@@ -2,7 +2,8 @@ import sys
 
 import typer_cloup as typer
 
-from containers import FtestContainer, MultipletestContiner
+from container.fluctuation import FtestContainer, MultipletestContiner
+from container.get_file import GetFileContainer
 
 # Default parameters for correction_input
 featurefile_input = {"id": None}
@@ -29,18 +30,16 @@ def ftest(
 ):
     print(f"control: {control}, experiment: {experiment}, alpha: {alpha}")
 
-    # Get feature file by id from database
-    """
     container = GetFileContainer()
-    container.config.from_dict(
-        {
-            "id": featurefile_input["id"],
-        }
-    )
+    container.config.from_yaml("config.yml")
     container.wire(modules=[sys.modules[__name__]])
-    get_file_handler = container.get_file_handler()
-    feature_data = get_file_handler.run()
-    """
+    get_file_handler = container.handler()
+    try:
+        feature_data = get_file_handler.run(featurefile_input["id"])
+    except Exception as e:
+        print(e)
+        return
+    print(f"{feature_data.file_name}: {feature_data.created_at}")
 
     # Setup FtestHandler
     container = FtestContainer()
@@ -53,7 +52,9 @@ def ftest(
     )
     container.wire(modules=[sys.modules[__name__]])
     fluctuation_handler = container.fluctuation_handler()
-    pvalues, reject = fluctuation_handler.run() # feature_data
+    pvals, reject = fluctuation_handler.run(feature_data)
+    print(pvals)
+    print(reject)
 
     # Setup MultipletestHandler
     if correction_input["multipletest"]:
@@ -67,9 +68,9 @@ def ftest(
         )
         container.wire(modules=[sys.modules[__name__]])
         multipletest_handler = container.multipletest_handler()
-        pvalues_adj, reject = multipletest_handler.run(pvalues)
+        pvals_corrected, reject = multipletest_handler.run(pvals)
 
-    print("pvalues: ", pvalues)
+    print("p_values: ", pvals_corrected)
     print("reject: ", reject)
 
 
