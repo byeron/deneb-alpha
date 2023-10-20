@@ -4,6 +4,7 @@ from enum import IntEnum, auto
 class ErrCode(IntEnum):
     UNMAPPED_INSTANCE = auto()
     DUPLICATE_FILE = auto()
+    NOT_FOUND = auto()
 
 
 class RepositoryError(Exception):
@@ -19,6 +20,8 @@ class RepositoryError(Exception):
                 self.message = (
                     f"Repository Error: The File is already exists\n{message}."
                 )
+            case ErrCode.NOT_FOUND:
+                self.message = f"Repository Error: {message} is not found."
             case _:
                 self.message = f"Repository Error: {message}"
 
