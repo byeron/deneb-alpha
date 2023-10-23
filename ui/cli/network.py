@@ -2,6 +2,7 @@ import sys
 
 import typer_cloup as typer
 
+from container.clustering import ClusteringContainer
 from container.dissimilarity import AbsLinearContainer
 from ui.cli.wire import FluctuationMethod, WireFluctuation
 
@@ -74,13 +75,46 @@ def correlation(
                 container.wire(modules=[sys.modules[__name__]])
                 dissimilarity_handler = container.handler()
                 d = dissimilarity_handler.run(feature_data)
-                print(d)
             case _:
                 raise ValueError(f"Invalid dissimilarity: {dissimilarity}")
+        return d
 
     except Exception as e:
         print(e)
         return
+
+
+@app.command()
+def clustering(
+    control: str = "control",
+    experiment: str = "experiment",
+    corr_method: str = "pearson",
+    dissimilarity: str = "abslinear",
+    cutoff: float = 0.5,
+    rank: int = 1,
+    linkage_method: str = "average",
+    criterion: str = "distance",
+):
+    d = correlation(
+        control=control,
+        experiment=experiment,
+        corr_method=corr_method,
+        dissimilarity=dissimilarity,
+    )
+
+    container = ClusteringContainer()
+    container.config.from_dict(
+        {
+            "cutoff": cutoff,
+            "rank": rank,
+            "method": linkage_method,
+            "criterion": criterion,
+        }
+    )
+    container.wire(modules=[sys.modules[__name__]])
+    clustering_handler = container.handler()
+    clusters = clustering_handler.run(d)
+    print(clusters)
 
 
 if __name__ == "__main__":
