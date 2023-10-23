@@ -1,0 +1,14 @@
+from usecase.dissimilarity import Dissimilarity
+
+
+class AbsLinear(Dissimilarity):
+    def __init__(self, dissimilarity_config):
+        super().__init__(dissimilarity_config)
+
+    def run(self, feature_data):
+        f = feature_data.fluctuation
+        f = f.loc[self.config.experiment, :]
+
+        dissimilarity = 1 - abs(f.corr(method=self.config.corr_method))
+        dissimilarity[dissimilarity < 0] = 0
+        return dissimilarity
