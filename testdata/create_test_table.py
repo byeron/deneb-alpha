@@ -2,19 +2,23 @@ import numpy as np
 import pandas as pd
 
 if __name__ == "__main__":
-    # 60 x 30 の乱数行列を生成
+    # 乱数のシードを設定
     np.random.seed(12345)
-    a = np.random.randint(0, 100, (20, 30))
-    b = np.random.randint(0, 100, (20, 30))
-    # bの指定した列にランダムな値を加算 or 減算する
-    b[:, 0:20] = b[:, 0:20] + np.random.randint(-90, 90, (20, 20))
+    matrix = np.random.rand(60, 30)
 
-    # aとbを結合
-    c = np.concatenate([a, b], axis=0)
-    df = pd.DataFrame(c)
-    l1 = ["control"] * 20
-    l2 = ["experiment"] * 20
-    l = l1 + l2
-    df.index = l
-    print(df)
-    df.to_csv("test_table.csv")
+    # 後半の0から20列の相関を高くする
+    # 例: 0から20列間の相関係数を0.8に設定
+    correlation_value = 0.8
+    correlation_matrix = np.ones((21, 21)) * correlation_value  # 相関係数行列の初期化
+    np.fill_diagonal(correlation_matrix, 1.0)  # 対角成分は1に設定
+    matrix[30:, :21] = np.random.multivariate_normal(
+        mean=np.zeros(21), cov=correlation_matrix, size=30
+    )
+    matrix[30:, :] += np.random.rand(30, 30)
+
+    print(matrix.shape)
+    df = pd.DataFrame(matrix)
+    # indexを設定
+    # 前半はcontrol, 後半はexperiment
+    df.index = ["control" if i < 30 else "experiment" for i in range(60)]
+    df.to_csv("testdata/test_table.csv")
