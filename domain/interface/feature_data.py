@@ -25,3 +25,7 @@ class IFeatureData(ABC):
     @abstractmethod
     def created_at(self) -> str:
         raise NotImplementedError("Subclasses must implement created_at method")
+
+    @abstractmethod
+    def fluctuation(self, reject: list[bool]):
+        raise NotImplementedError("Subclasses must implement fluctuation method")

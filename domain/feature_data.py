@@ -17,6 +17,7 @@ class FeatureData(IFeatureData):
     _hash: str = None
     _created_at: str = None
     _matrix: pd.DataFrame = None
+    _fluctuation: pd.DataFrame = None
 
     def __post_init__(self):
         if self._src_path is not None:
@@ -76,6 +77,16 @@ class FeatureData(IFeatureData):
             for byte_block in iter(lambda: f.read(4096), b""):
                 hash_md5.update(byte_block)
         return hash_md5.hexdigest()
+
+    @property
+    def fluctuation(self) -> pd.DataFrame:
+        return self._fluctuation
+
+    @fluctuation.setter
+    def fluctuation(self, reject: list[bool]):
+        reject = self._matrix.columns[reject]
+        self._fluctuation = self._matrix.loc[:, reject]
+        return self._fluctuation
 
     @property
     def src_path(self) -> str:
