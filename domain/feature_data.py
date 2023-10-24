@@ -33,7 +33,7 @@ class FeatureData(IFeatureData):
             # 各メンバ変数を設定
             # set _file_id
             if self._file_id is None:
-                self._file_id = str(uuid.uuid4())
+                self._file_id = str(uuid.uuid4()).split("-")[0]
 
             # get _file_name & set _file_name
             self._file_name = os.path.basename(self._src_path).split(".")[0]
