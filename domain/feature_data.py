@@ -111,3 +111,7 @@ class FeatureData(IFeatureData):
     @property
     def matrix(self) -> pd.DataFrame:
         return self._matrix
+
+    @property
+    def features(self) -> list[str]:
+        return self._matrix.columns.tolist()

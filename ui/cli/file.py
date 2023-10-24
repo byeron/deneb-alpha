@@ -22,6 +22,7 @@ def register(path: str) -> None:
     register_file_handler = container.handler()
     try:
         _id = register_file_handler.run(path)
+
     except Exception as e:
         print(e)
         return
