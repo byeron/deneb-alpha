@@ -5,6 +5,7 @@ import typer_cloup as typer
 from container.clustering import ClusteringContainer
 from container.dissimilarity import AbsLinearContainer
 from ui.cli.wire import FluctuationMethod, WireFluctuation
+from usecase.output_clustering import OutputClustering
 from usecase.output_correlation import OutputCorrelation
 
 featuredata_input = {"id": None}
@@ -123,6 +124,14 @@ def clustering(
     container.wire(modules=[sys.modules[__name__]])
     clustering_handler = container.handler()
     clusters = clustering_handler.run(d)
+
+    # Output
+    output = OutputClustering(
+        _id=featuredata_input["id"],
+        cutoff=cutoff,
+        rank=rank,
+    )
+    output.run(clusters[1])
     print(clusters)
 
 
