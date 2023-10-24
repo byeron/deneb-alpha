@@ -5,6 +5,8 @@ import typer_cloup as typer
 from container.clustering import ClusteringContainer
 from container.dissimilarity import AbsLinearContainer
 from ui.cli.wire import FluctuationMethod, WireFluctuation
+from usecase.output_clustering import OutputClustering
+from usecase.output_correlation import OutputCorrelation
 
 featuredata_input = {"id": None}
 fluctuation_input = {"alpha": 0.05, "method": "ftest"}
@@ -39,6 +41,7 @@ def correlation(
     dissimilarity: str = "abslinear",
 ):
     fluctuation_method = None
+    d = None
     try:
         match fluctuation_input["method"]:
             case "ftest":
@@ -77,11 +80,18 @@ def correlation(
                 d = dissimilarity_handler.run(feature_data)
             case _:
                 raise ValueError(f"Invalid dissimilarity: {dissimilarity}")
-        return d
 
     except Exception as e:
         print(e)
         return
+
+    output = OutputCorrelation(
+        _id=featuredata_input["id"],
+        metric=dissimilarity,
+    )
+    result = output.run(d)
+    print(result)
+    return result
 
 
 @app.command()
@@ -114,6 +124,14 @@ def clustering(
     container.wire(modules=[sys.modules[__name__]])
     clustering_handler = container.handler()
     clusters = clustering_handler.run(d)
+
+    # Output
+    output = OutputClustering(
+        _id=featuredata_input["id"],
+        cutoff=cutoff,
+        rank=rank,
+    )
+    output.run(clusters[1])
     print(clusters)
 
 
