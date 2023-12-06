@@ -123,7 +123,12 @@ def clustering(
     )
     container.wire(modules=[sys.modules[__name__]])
     clustering_handler = container.handler()
-    clusters = clustering_handler.run(d)
+
+    try:
+        clusters = clustering_handler.run(d)
+    except ValueError as e:
+        print(f"Error: {e}")
+        sys.exit(1)
 
     # Output
     output = OutputClustering(
