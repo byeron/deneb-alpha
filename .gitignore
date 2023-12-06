@@ -164,3 +164,5 @@ uploads/*.csv
 *.sqlite3
 # mediumディレクトリとそのサブディレクトリの.csvファイルはgit管理しない
 medium/**/*.csv
+
+.gitconfig
