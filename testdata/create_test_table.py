@@ -28,3 +28,16 @@ if __name__ == "__main__":
     )
 
     df.to_csv("testdata/test_table.csv")
+
+    # 一様乱数の行列を作成
+    matrix = np.random.rand(90, 30)
+    df = pd.DataFrame(matrix)
+    # indexを設定
+    # 0から29行目までをcontrol、30から59行目までをexperiment, 60から89行目までをotherとする
+    df.index = (
+        ["control" for i in range(30)]
+        + ["experiment" for i in range(30)]
+        + ["other" for i in range(30)]
+    )
+
+    df.to_csv("testdata/test_table_uniform.csv")
