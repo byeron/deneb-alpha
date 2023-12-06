@@ -19,6 +19,9 @@ class Clusters:
         sizes = [c.size for c in self._clusters]
         unique_sizes = sorted(list(set(sizes)), reverse=True)
         ranked_sizes = {n + 1: size for n, size in enumerate(unique_sizes)}
+        if rank not in ranked_sizes:
+            raise ValueError(f"count of cluster is less than {rank}")
+
         size = ranked_sizes[rank]
 
         size_features = {c.size: [] for c in self._clusters}
