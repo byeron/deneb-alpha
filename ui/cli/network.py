@@ -64,22 +64,26 @@ def correlation(
             pvals_corrected, reject = wired.multipletest_handler.run(pvals)
             pvals = pvals_corrected
 
-        match dissimilarity:
-            case "abslinear":
-                feature_data.fluctuation = reject
-                container = AbsLinearContainer()
-                container.config.from_dict(
-                    {
-                        "experiment": experiment,
-                        "corr_method": corr_method,
-                        "dissimilarity": dissimilarity,
-                    }
-                )
-                container.wire(modules=[sys.modules[__name__]])
-                dissimilarity_handler = container.handler()
-                d = dissimilarity_handler.run(feature_data)
-            case _:
-                raise ValueError(f"Invalid dissimilarity: {dissimilarity}")
+        try:
+            match dissimilarity:
+                case "abslinear":
+                    feature_data.fluctuation = reject
+                    container = AbsLinearContainer()
+                    container.config.from_dict(
+                        {
+                            "experiment": experiment,
+                            "corr_method": corr_method,
+                            "dissimilarity": dissimilarity,
+                        }
+                    )
+                    container.wire(modules=[sys.modules[__name__]])
+                    dissimilarity_handler = container.handler()
+                    d = dissimilarity_handler.run(feature_data)
+                case _:
+                    raise ValueError(f"Invalid dissimilarity: {dissimilarity}")
+        except ValueError as e:
+            print(f"Error:\t{e}")
+            sys.exit(1)
 
     except Exception as e:
         print(e)
@@ -127,7 +131,7 @@ def clustering(
     try:
         clusters = clustering_handler.run(d)
     except ValueError as e:
-        print(f"Error: {e}")
+        print(f"Error:\t{e}")
         sys.exit(1)
 
     # Output
