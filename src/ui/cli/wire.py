@@ -46,7 +46,7 @@ class WireFluctuation:
     def setup_common_handler(self, alpha: float, multipletest: bool, method: str):
         # Setup Handlers
         container = GetFileContainer()
-        container.config.from_yaml("config.yml")
+        container.config.from_yaml("./src/config.yml")
         container.wire(modules=[sys.modules[__name__]])
         self.get_file_handler = container.handler()
 

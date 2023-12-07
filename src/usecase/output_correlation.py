@@ -8,7 +8,7 @@ class OutputCorrelation(IOutputCorrelation):
         self,
         _id: str,
         metric: str = "abslinear",
-        dst_dir: str = "medium",
+        dst_dir: str = "./src/medium",
     ):
         self.output_path = f"{dst_dir}/{_id}/{metric}.csv"
 

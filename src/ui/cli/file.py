@@ -12,7 +12,7 @@ app = typer.Typer()
 @app.command()
 def register(path: str) -> None:
     container = RegisterFileContainer()
-    container.config.from_yaml("config.yml")  # URL/REPO_DIR
+    container.config.from_yaml("./src/config.yml")  # URL/REPO_DIR
     container.config.from_dict(
         {
             "src_path": path,
@@ -32,7 +32,7 @@ def register(path: str) -> None:
 @app.command()
 def get() -> None:
     container = GetFilesContainer()
-    container.config.from_yaml("config.yml")
+    container.config.from_yaml("./src/config.yml")
     get_files_handler = container.handler()
     try:
         feature_files = get_files_handler.run()
@@ -54,7 +54,7 @@ def get() -> None:
 @app.command()
 def delete(file_id: str) -> None:
     container = DeleteFileContainer()
-    container.config.from_yaml("config.yml")
+    container.config.from_yaml("./src/config.yml")
     delete_file_handler = container.delete_file_handler()
     try:
         _id = delete_file_handler.run(file_id)

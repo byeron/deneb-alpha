@@ -6,7 +6,7 @@ from domain.interface.feature_data_repository import IFeatureDataRepository
 
 class DeleteFile(IDeleteFile):
     def __init__(
-        self, repo: IFeatureDataRepository, output_dir: str = "medium"
+        self, repo: IFeatureDataRepository, output_dir: str = "./src/medium"
     ) -> None:
         self.repo = repo
         self.output_dir = output_dir

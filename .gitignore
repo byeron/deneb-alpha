@@ -160,9 +160,9 @@ cython_debug/
 #.idea/
 
 # uploadsディレクトリの.csvファイルはgit管理しない
-uploads/*.csv
-*.sqlite3
+src/uploads/*.csv
+src/*.sqlite3
 # mediumディレクトリとそのサブディレクトリの.csvファイルはgit管理しない
-medium/**/*.csv
+src/medium/**/*.csv
 
 .gitconfig
