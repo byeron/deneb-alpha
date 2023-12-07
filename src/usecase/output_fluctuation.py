@@ -4,7 +4,7 @@ from domain.interface.output_fluctuation import IOutputFluctuation
 
 
 class OutputFluctuation(IOutputFluctuation):
-    def __init__(self, _id: str, method: str = "ftest", dst_dir: str = "medium"):
+    def __init__(self, _id: str, method: str = "ftest", dst_dir: str = "./src/medium"):
         self.output_path = f"{dst_dir}/{_id}/{method}.csv"
 
     def run(

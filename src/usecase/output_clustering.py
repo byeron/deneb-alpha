@@ -9,7 +9,7 @@ class OutputClustering(IOutputClustering):
         _id: str,
         cutoff: float = 0.05,
         rank: int = 1,
-        dst_dir: str = "medium",
+        dst_dir: str = "./src/medium",
     ):
         cutoff = str(cutoff).replace(".", "_")
         self.output_path = f"{dst_dir}/{_id}/cluster-{cutoff}-{rank}.csv"

@@ -7,7 +7,7 @@ from domain.interface.register_file import IRegisterFile
 
 class RegisterFile(IRegisterFile):
     def __init__(
-        self, repo: IFeatureDataRepository, output_dir: str = "medium"
+        self, repo: IFeatureDataRepository, output_dir: str = "./src/medium"
     ) -> None:
         self.repo = repo
         self.output_dir = output_dir
