@@ -115,3 +115,7 @@ class FeatureData(IFeatureData):
     @property
     def features(self) -> list[str]:
         return self._matrix.columns.tolist()
+
+    @property
+    def samples(self) -> list[str]:
+        return self._matrix.index.tolist()
