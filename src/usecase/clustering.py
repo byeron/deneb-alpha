@@ -19,21 +19,18 @@ class Clustering(IClustering):
         Z = linkage(d, method=self.config.method)
         ids = fcluster(Z, self.config.cutoff, criterion=self.config.criterion)
 
-        ids_size = dict(zip(*np.unique(ids, return_counts=True)))
-        ids_features = {i: [] for i in np.unique(ids)}
-
+        ids_features = {}
         for _id, feature in zip(ids, rejected_feature):
-            ids_features[_id].append(feature)
+            ids_features.setdefault(_id, []).append(feature)
 
-        tmp = []
-        for _id, features in ids_features.items():
-            size = ids_size[_id]
-            tmp.append(
+        clusters = Clusters(
+            [
                 Cluster(
                     _id=_id,
                     _features=features,
-                    _size=size,
                 )
-            )
-        clusters = Clusters(tmp)
+                for _id, features in ids_features.items()
+            ]
+        )
+
         return clusters.nth_largest(self.config.rank)

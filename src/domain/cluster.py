@@ -5,7 +5,17 @@ from dataclasses import dataclass
 class Cluster:
     _id: int
     _features: list[str]
-    _size: int
+
+    def __post_init__(self):
+        if not isinstance(self._id, int):
+            raise TypeError("id must be int type")
+
+        if not isinstance(self._features, list):
+            raise TypeError("features must be list type")
+
+        for feature in self._features:
+            if not isinstance(feature, str):
+                raise TypeError("feature must be str type")
 
     @property
     def id(self):
@@ -17,4 +27,4 @@ class Cluster:
 
     @property
     def size(self):
-        return self._size
+        return self._features.__len__()
