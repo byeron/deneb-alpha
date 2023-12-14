@@ -1,9 +1,11 @@
-from src.domain.dissimilarity_config import DissimilarityConfig
 import pytest
+
+from src.domain.dissimilarity_config import DissimilarityConfig
 
 # コンストラクタに与えられる引数の型が誤っている場合
 
 # experimentがstr型でない場合
+
 
 def test_experiment_type_error():
     with pytest.raises(TypeError):
@@ -13,16 +15,18 @@ def test_experiment_type_error():
             dissimilarity="abslinear",
         )
 
+
 # corr_methodがstr型でない場合
 
-def test_corr_method_type_error():
 
+def test_corr_method_type_error():
     with pytest.raises(TypeError):
         DissimilarityConfig(
             experiment="experiment",
             corr_method=1,
             dissimilarity="abslinear",
         )
+
 
 # dissimilarityがstr型でない場合
 def test_dissimilarity_type_error():
@@ -33,6 +37,7 @@ def test_dissimilarity_type_error():
             dissimilarity=1,
         )
 
+
 # corr_methodが"pearson"でも"spearman"でもない場合
 def test_corr_method_value_error():
     with pytest.raises(ValueError):
@@ -42,11 +47,12 @@ def test_corr_method_value_error():
             dissimilarity="abslinear",
         )
 
+
 # dissimilarityが"abslinear"でもない場合
 def test_dissimilarity_value_error():
-        with pytest.raises(ValueError):
-            DissimilarityConfig(
-                experiment="experiment",
-                corr_method="pearson",
-                dissimilarity="abs",
-            )
+    with pytest.raises(ValueError):
+        DissimilarityConfig(
+            experiment="experiment",
+            corr_method="pearson",
+            dissimilarity="abs",
+        )

@@ -1,6 +1,8 @@
-from src.domain.clusters import Clusters
-from src.domain.cluster import Cluster
 import pytest
+
+from src.domain.cluster import Cluster
+from src.domain.clusters import Clusters
+
 
 @pytest.fixture
 def clusters():
@@ -24,6 +26,7 @@ def clusters():
             ),
         ]
     )
+
 
 # 誤った型の引数を渡した場合にエラーになることを確認するテスト
 def test_clusters_init_error1():
@@ -81,9 +84,11 @@ def test_clusters_init_error1():
             ]
         )
 
+
 # max_size()のテスト
 def test_max_size(clusters):
     assert clusters.max_size() == 4
+
 
 # max_clusters()のテスト
 def test_max_clusters(clusters):
@@ -98,10 +103,12 @@ def test_max_clusters(clusters):
         ),
     ]
 
+
 # rankが存在しない場合にエラーになることを確認するテスト
 def test_nth_largest_error1(clusters):
     with pytest.raises(ValueError):
         clusters.nth_largest(5)
+
 
 # rankが存在する場合に正しい値を返すことを確認するテスト
 def test_nth_largest_error2(clusters):

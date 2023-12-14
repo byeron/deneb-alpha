@@ -1,5 +1,7 @@
-from src.domain.cluster import Cluster
 import pytest
+
+from src.domain.cluster import Cluster
+
 
 # 正しい型の引数を渡した場合にエラーにならないことを確認するテスト
 def test_cluster_init():
@@ -7,6 +9,7 @@ def test_cluster_init():
     assert cluster.id == 1
     assert cluster.features == ["a", "b", "c"]
     assert cluster.size == 3
+
 
 # 誤った型の引数を渡した場合にエラーになることを確認するテスト
 def test_cluster_init_error1():

@@ -41,7 +41,9 @@ class Ftest(Fluctuation):
         if control_var.isin([0]).any():
             # 分散が0の要素名を取得
             zero_var_columns = control_var[control_var == 0].index.tolist()
-            raise ValueError(f"Control group has zero variance columns: {zero_var_columns}")
+            raise ValueError(
+                f"Control group has zero variance columns: {zero_var_columns}"
+            )
 
         f_value = experiment_var / control_var
         p_value = f.sf(f_value, dfn=(len(experiment) - 1), dfd=(len(control) - 1))

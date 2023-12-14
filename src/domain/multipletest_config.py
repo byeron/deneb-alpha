@@ -6,7 +6,18 @@ from domain.interface.multipletest_config import IMultipletestConfig
 
 @dataclass(frozen=True)
 class MultipletestConfig(IMultipletestConfig):
-    method: Literal["bonferroni", "sidak", "holm-sidak", "holm", "simes-hochberg", "hommel", "fdr_bh", "fdr_by", "fdr_tsbh", "fdr_tsbky"]
+    method: Literal[
+        "bonferroni",
+        "sidak",
+        "holm-sidak",
+        "holm",
+        "simes-hochberg",
+        "hommel",
+        "fdr_bh",
+        "fdr_by",
+        "fdr_tsbh",
+        "fdr_tsbky",
+    ]
     alpha: float
 
     def __post_init__(self):

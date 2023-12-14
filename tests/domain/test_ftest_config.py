@@ -1,5 +1,7 @@
-from src.domain.ftest_config import FtestConfig
 import pytest
+
+from src.domain.ftest_config import FtestConfig
+
 
 @pytest.fixture
 def ftest_config():
@@ -8,6 +10,7 @@ def ftest_config():
         experiment="experiment",
         alpha=0.05,
     )
+
 
 # コンストラクタに与えられる引数の型が誤っている場合
 # controlがstr型でない場合
@@ -19,6 +22,7 @@ def test_control_type_error():
             alpha=0.05,
         )
 
+
 # experimentがstr型でない場合
 def test_experiment_type_error():
     with pytest.raises(TypeError):
@@ -28,6 +32,7 @@ def test_experiment_type_error():
             alpha=0.05,
         )
 
+
 # alphaがfloat型でない場合
 def test_alpha_type_error():
     with pytest.raises(TypeError):
@@ -36,6 +41,7 @@ def test_alpha_type_error():
             experiment="experiment",
             alpha="0.05",
         )
+
 
 # 有意水準は0より大きく1より小さい値でなければならない
 def test_alpha_value_error():

@@ -1,12 +1,14 @@
+import pytest
+
 from src.domain.multipletest_config import MultipletestConfig
 
-import pytest
 
 # 正しい型の引数を渡した場合にエラーにならないことを確認するテスト
 def test_multipletest_config_init():
     config = MultipletestConfig("bonferroni", 0.05)
     assert config.method == "bonferroni"
     assert config.alpha == 0.05
+
 
 # 誤った型の引数を渡した場合にエラーになることを確認するテスト
 def test_multipletest_config_init_error1():
