@@ -21,6 +21,7 @@ class Clustering(IClustering):
 
         ids_features = {}
         for _id, feature in zip(ids, rejected_feature):
+            _id = int(_id)
             ids_features.setdefault(_id, []).append(feature)
 
         clusters = Clusters(
