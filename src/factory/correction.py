@@ -1,8 +1,9 @@
-from domain.multipletest_config import MultipletestConfig
-from domain.interface.multipletest_config import IMultipletestConfig
-from usecase.multipletest import Multipletest
-from domain.interface.multipletest import IMultipletest
 from injector import Module
+
+from domain.interface.multipletest import IMultipletest
+from domain.interface.multipletest_config import IMultipletestConfig
+from domain.multipletest_config import MultipletestConfig
+from usecase.multipletest import Multipletest
 
 
 class CorrectionFactory(Module):

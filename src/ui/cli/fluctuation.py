@@ -1,20 +1,18 @@
 import typer_cloup as typer
 
-# from ui.cli.wire import FluctuationMethod, WireFluctuation
-from usecase.output_fluctuation import OutputFluctuation
-from domain.interface.fluctuation import IFluctuation
-
 # for injection
 from injector import Injector, Module
 
-from infrastructure.feature_data_repository import FeatureDataRepository
+from domain.interface.fluctuation import IFluctuation
 from domain.interface.get_file import IGetFile
 from domain.interface.multipletest import IMultipletest
-
+from factory.correction import CorrectionFactory
 from factory.fluctuation import FluctuationFactory
 from factory.get_file import GetFileFactory
-from factory.correction import CorrectionFactory
+from infrastructure.feature_data_repository import FeatureDataRepository
 
+# from ui.cli.wire import FluctuationMethod, WireFluctuation
+from usecase.output_fluctuation import OutputFluctuation
 
 # Default parameters for correction_input
 featuredata_input = {"id": None}

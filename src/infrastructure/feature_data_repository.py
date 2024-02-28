@@ -2,15 +2,15 @@ import os
 import shutil
 
 import sqlalchemy
+from injector import inject
 
+from domain.data_dir import DataDir
 from domain.feature_data import FeatureData
 from domain.interface.feature_data import IFeatureData
 from domain.interface.feature_data_repository import IFeatureDataRepository
 from domain.interface.session_handler import ISessionHandler
 from infrastructure.error import ErrCode, RepositoryError
 from infrastructure.model import models
-from domain.data_dir import DataDir
-from injector import inject
 
 
 class FeatureDataRepository(IFeatureDataRepository):

@@ -1,8 +1,9 @@
 from dataclasses import dataclass
 from typing import Literal
 
-from domain.interface.multipletest_config import IMultipletestConfig
 from injector import inject
+
+from domain.interface.multipletest_config import IMultipletestConfig
 
 
 @inject

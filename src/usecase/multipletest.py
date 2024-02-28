@@ -1,8 +1,8 @@
+from injector import inject
 from statsmodels.stats.multitest import multipletests
 
 from domain.interface.multipletest import IMultipletest
 from domain.interface.multipletest_config import IMultipletestConfig
-from injector import inject
 
 
 class Multipletest(IMultipletest):

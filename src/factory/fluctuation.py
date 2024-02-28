@@ -1,7 +1,8 @@
-from usecase.ftest import Ftest
-from domain.ftest_config import FtestConfig
 from injector import Module
+
+from domain.ftest_config import FtestConfig
 from domain.interface.fluctuation import IFluctuation
+from usecase.ftest import Ftest
 
 
 class FluctuationFactory(Module):
