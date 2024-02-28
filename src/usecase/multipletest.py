@@ -2,9 +2,11 @@ from statsmodels.stats.multitest import multipletests
 
 from domain.interface.multipletest import IMultipletest
 from domain.interface.multipletest_config import IMultipletestConfig
+from injector import inject
 
 
 class Multipletest(IMultipletest):
+    @inject
     def __init__(self, config: IMultipletestConfig):
         if not hasattr(config, "method"):
             raise AttributeError("method is not set")

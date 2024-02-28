@@ -2,8 +2,10 @@ from dataclasses import dataclass
 from typing import Literal
 
 from domain.interface.multipletest_config import IMultipletestConfig
+from injector import inject
 
 
+@inject
 @dataclass(frozen=True)
 class MultipletestConfig(IMultipletestConfig):
     method: Literal[

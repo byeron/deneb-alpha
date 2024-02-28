@@ -9,12 +9,15 @@ from domain.interface.feature_data_repository import IFeatureDataRepository
 from domain.interface.session_handler import ISessionHandler
 from infrastructure.error import ErrCode, RepositoryError
 from infrastructure.model import models
+from domain.data_dir import DataDir
+from injector import inject
 
 
 class FeatureDataRepository(IFeatureDataRepository):
-    def __init__(self, db: ISessionHandler, repo_dir: str) -> None:
+    @inject
+    def __init__(self, db: ISessionHandler, repo_dir: DataDir) -> None:
         self.db = db
-        self.repo_dir = repo_dir
+        self.repo_dir = repo_dir.value
 
     def save(self, feature_data: IFeatureData) -> str:
         try:
