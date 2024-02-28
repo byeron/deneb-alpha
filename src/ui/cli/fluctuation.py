@@ -1,9 +1,20 @@
-import sys
-
 import typer_cloup as typer
 
-from ui.cli.wire import FluctuationMethod, WireFluctuation
+# from ui.cli.wire import FluctuationMethod, WireFluctuation
 from usecase.output_fluctuation import OutputFluctuation
+from domain.interface.fluctuation import IFluctuation
+
+# for injection
+from injector import Injector, Module
+
+from infrastructure.feature_data_repository import FeatureDataRepository
+from domain.interface.get_file import IGetFile
+from domain.interface.multipletest import IMultipletest
+
+from factory.fluctuation import FluctuationFactory
+from factory.get_file import GetFileFactory
+from factory.correction import CorrectionFactory
+
 
 # Default parameters for correction_input
 featuredata_input = {"id": None}
@@ -31,21 +42,26 @@ def ftest(
     print(f"control: {control}, experiment: {experiment}, alpha: {alpha}")
 
     pvals_corrected = None
+
     try:
-        # Setup WireFluctuation
-        wired = WireFluctuation(
-            control=control,
-            experiment=experiment,
-            fluctuation_method=FluctuationMethod.FTEST,
-            alpha=alpha,
-            multipletest=correction_input["multipletest"],
-            multipletest_method=correction_input["method"],
-        )
-        feature_data = wired.get_file_handler.run(featuredata_input["id"])
-        pvals, reject = wired.fluctuation_handler.run(feature_data)
+        factory = GetFileFactory()
+        injector = Injector(factory.configure)
+        get_file_handler = injector.get(IGetFile)
+
+        factory = FluctuationFactory(control, experiment, alpha)
+        injector = Injector(factory.configure)
+        fluctuation_handler = injector.get(IFluctuation)
+
+        factory = CorrectionFactory(correction_input["method"], alpha)
+        injector = Injector(factory.configure)
+        multipletest_handler = injector.get(IMultipletest)
+
+        feature_data = get_file_handler.run(featuredata_input["id"])
+        pvals, reject = fluctuation_handler.run(feature_data)
 
         if correction_input["multipletest"]:
-            pvals_corrected, reject = wired.multipletest_handler.run(pvals)
+            pvals_corrected, reject = multipletest_handler.run(pvals)
+
     except Exception as e:
         print(e)
         return
