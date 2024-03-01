@@ -1,17 +1,18 @@
 from injector import Module
-from domain.interface.clustering_config import IClusteringConfig
-from domain.interface.clustering import IClustering
+
 from domain.clustering_config import ClusteringConfig
+from domain.interface.clustering import IClustering
+from domain.interface.clustering_config import IClusteringConfig
 from usecase.clustering import Clustering
 
 
 class ClusteringFactory(Module):
     def __init__(
-            self,
-            cutoff,
-            rank,
-            linkage_method,
-            criterion,
+        self,
+        cutoff,
+        rank,
+        linkage_method,
+        criterion,
     ):
         self.cutoff = cutoff
         self.rank = rank
@@ -26,6 +27,6 @@ class ClusteringFactory(Module):
                 self.rank,
                 self.linkage_method,
                 self.criterion,
-            )
+            ),
         )
         binder.bind(IClustering, to=Clustering)

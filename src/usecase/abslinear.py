@@ -1,6 +1,7 @@
-from usecase.dissimilarity import Dissimilarity
-from domain.interface.dissimilarity_config import IDissimilarityConfig
 from injector import inject
+
+from domain.interface.dissimilarity_config import IDissimilarityConfig
+from usecase.dissimilarity import Dissimilarity
 
 
 class AbsLinear(Dissimilarity):

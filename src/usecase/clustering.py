@@ -1,4 +1,5 @@
 import pandas as pd
+from injector import inject
 from scipy.cluster.hierarchy import fcluster, linkage
 from scipy.spatial.distance import squareform
 
@@ -6,8 +7,6 @@ from domain.cluster import Cluster
 from domain.clusters import Clusters
 from domain.interface.clustering import IClustering
 from domain.interface.clustering_config import IClusteringConfig
-
-from injector import inject
 
 
 class Clustering(IClustering):

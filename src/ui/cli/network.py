@@ -1,19 +1,18 @@
-from domain.interface.dissimilarity import IDissimilarity
-
 import typer_cloup as typer
-
-from usecase.output_clustering import OutputClustering
-from usecase.output_correlation import OutputCorrelation
-from factory.fluctuation import FluctuationFactory
-from factory.get_file import GetFileFactory
-from factory.correction import CorrectionFactory
 from injector import Injector
+
+from domain.interface.clustering import IClustering
+from domain.interface.dissimilarity import IDissimilarity
 from domain.interface.fluctuation import IFluctuation
 from domain.interface.get_file import IGetFile
 from domain.interface.multipletest import IMultipletest
-from domain.interface.clustering import IClustering
-from factory.dissimilarity import DissimilarityFactory
 from factory.clustering import ClusteringFactory
+from factory.correction import CorrectionFactory
+from factory.dissimilarity import DissimilarityFactory
+from factory.fluctuation import FluctuationFactory
+from factory.get_file import GetFileFactory
+from usecase.output_clustering import OutputClustering
+from usecase.output_correlation import OutputCorrelation
 
 featuredata_input = {"id": None}
 fluctuation_input = {"alpha": 0.05, "method": "ftest"}
