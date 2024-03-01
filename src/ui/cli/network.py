@@ -1,9 +1,7 @@
 from domain.interface.dissimilarity import IDissimilarity
-import sys
 
 import typer_cloup as typer
 
-from container.clustering import ClusteringContainer
 from usecase.output_clustering import OutputClustering
 from usecase.output_correlation import OutputCorrelation
 from factory.fluctuation import FluctuationFactory
@@ -13,7 +11,9 @@ from injector import Injector
 from domain.interface.fluctuation import IFluctuation
 from domain.interface.get_file import IGetFile
 from domain.interface.multipletest import IMultipletest
+from domain.interface.clustering import IClustering
 from factory.dissimilarity import DissimilarityFactory
+from factory.clustering import ClusteringFactory
 
 featuredata_input = {"id": None}
 fluctuation_input = {"alpha": 0.05, "method": "ftest"}
@@ -70,24 +70,24 @@ def correlation(
     corr_method: str = "pearson",
     dissimilarity: str = "abslinear",
 ):
-    d = None
-
+    # handler生成
     get_file_handler, fluctuation_handler, correction_handler = factory_handlers(
         control,
         experiment,
         fluctuation_input,
         correction_input,
     )
+    factory = DissimilarityFactory(experiment, corr_method, dissimilarity)
+    injector = Injector(factory.configure)
+    dissimilarity_handler = injector.get(IDissimilarity)
 
+    # 等分散検定
     feature_data = get_file_handler.run(featuredata_input["id"])
     pvals, reject = fluctuation_handler.run(feature_data)
     if correction_input["multipletest"]:
         pvals_corrected, reject = correction_handler.run(pvals)
 
-    factory = DissimilarityFactory(experiment, corr_method, dissimilarity)
-    injector = Injector(factory.configure)
-    dissimilarity_handler = injector.get(IDissimilarity)
-
+    # 非類似度計算
     feature_data.fluctuation = reject
     d = dissimilarity_handler.run(feature_data)
 
@@ -111,6 +111,12 @@ def clustering(
     linkage_method: str = "average",
     criterion: str = "distance",
 ):
+    # handler 生成
+    factory = ClusteringFactory(cutoff, rank, linkage_method, criterion)
+    injector = Injector(factory.configure)
+    clustering_handler = injector.get(IClustering)
+
+    # クラスタリング
     d = correlation(
         control=control,
         experiment=experiment,
@@ -118,23 +124,7 @@ def clustering(
         dissimilarity=dissimilarity,
     )
 
-    container = ClusteringContainer()
-    container.config.from_dict(
-        {
-            "cutoff": cutoff,
-            "rank": rank,
-            "method": linkage_method,
-            "criterion": criterion,
-        }
-    )
-    container.wire(modules=[sys.modules[__name__]])
-    clustering_handler = container.handler()
-
-    try:
-        clusters = clustering_handler.run(d)
-    except ValueError as e:
-        print(f"Error:\t{e}")
-        sys.exit(1)
+    clusters = clustering_handler.run(d)
 
     # Output
     output = OutputClustering(

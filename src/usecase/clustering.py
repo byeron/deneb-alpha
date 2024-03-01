@@ -5,10 +5,14 @@ from scipy.spatial.distance import squareform
 from domain.cluster import Cluster
 from domain.clusters import Clusters
 from domain.interface.clustering import IClustering
+from domain.interface.clustering_config import IClusteringConfig
+
+from injector import inject
 
 
 class Clustering(IClustering):
-    def __init__(self, clustering_config):
+    @inject
+    def __init__(self, clustering_config: IClusteringConfig):
         super().__init__(clustering_config)
 
     def run(self, dissimilarity_matrix: pd.DataFrame):
