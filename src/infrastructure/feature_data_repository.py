@@ -2,7 +2,9 @@ import os
 import shutil
 
 import sqlalchemy
+from injector import inject
 
+from domain.data_dir import DataDir
 from domain.feature_data import FeatureData
 from domain.interface.feature_data import IFeatureData
 from domain.interface.feature_data_repository import IFeatureDataRepository
@@ -12,9 +14,10 @@ from infrastructure.model import models
 
 
 class FeatureDataRepository(IFeatureDataRepository):
-    def __init__(self, db: ISessionHandler, repo_dir: str) -> None:
+    @inject
+    def __init__(self, db: ISessionHandler, repo_dir: DataDir) -> None:
         self.db = db
-        self.repo_dir = repo_dir
+        self.repo_dir = repo_dir.value
 
     def save(self, feature_data: IFeatureData) -> str:
         try:

@@ -1,8 +1,16 @@
-import sys
-
 import typer_cloup as typer
 
-from ui.cli.wire import FluctuationMethod, WireFluctuation
+# for injection
+from injector import Injector, Module
+
+from domain.interface.fluctuation import IFluctuation
+from domain.interface.get_file import IGetFile
+from domain.interface.multiple_correction import IMultipleCorrection
+from factory.correction import CorrectionFactory
+from factory.fluctuation import FluctuationFactory
+from factory.get_file import GetFileFactory
+
+# from ui.cli.wire import FluctuationMethod, WireFluctuation
 from usecase.output_fluctuation import OutputFluctuation
 
 # Default parameters for correction_input
@@ -31,21 +39,26 @@ def ftest(
     print(f"control: {control}, experiment: {experiment}, alpha: {alpha}")
 
     pvals_corrected = None
+
     try:
-        # Setup WireFluctuation
-        wired = WireFluctuation(
-            control=control,
-            experiment=experiment,
-            fluctuation_method=FluctuationMethod.FTEST,
-            alpha=alpha,
-            multipletest=correction_input["multipletest"],
-            multipletest_method=correction_input["method"],
-        )
-        feature_data = wired.get_file_handler.run(featuredata_input["id"])
-        pvals, reject = wired.fluctuation_handler.run(feature_data)
+        factory = GetFileFactory()
+        injector = Injector(factory.configure)
+        get_file_handler = injector.get(IGetFile)
+
+        factory = FluctuationFactory(control, experiment, alpha)
+        injector = Injector(factory.configure)
+        fluctuation_handler = injector.get(IFluctuation)
+
+        factory = CorrectionFactory(correction_input["method"], alpha)
+        injector = Injector(factory.configure)
+        multiple_correction_handler = injector.get(IMultipleCorrection)
+
+        feature_data = get_file_handler.run(featuredata_input["id"])
+        pvals, reject = fluctuation_handler.run(feature_data)
 
         if correction_input["multipletest"]:
-            pvals_corrected, reject = wired.multipletest_handler.run(pvals)
+            pvals_corrected, reject = multiple_correction_handler.run(pvals)
+
     except Exception as e:
         print(e)
         return

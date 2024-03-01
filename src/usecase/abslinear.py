@@ -1,8 +1,12 @@
+from injector import inject
+
+from domain.interface.dissimilarity_config import IDissimilarityConfig
 from usecase.dissimilarity import Dissimilarity
 
 
 class AbsLinear(Dissimilarity):
-    def __init__(self, dissimilarity_config):
+    @inject
+    def __init__(self, dissimilarity_config: IDissimilarityConfig):
         super().__init__(dissimilarity_config)
 
     def run(self, feature_data):

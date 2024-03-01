@@ -1,10 +1,16 @@
-import sys
-
 import typer_cloup as typer
+from injector import Injector
 
-from container.clustering import ClusteringContainer
-from container.dissimilarity import AbsLinearContainer
-from ui.cli.wire import FluctuationMethod, WireFluctuation
+from domain.interface.clustering import IClustering
+from domain.interface.dissimilarity import IDissimilarity
+from domain.interface.fluctuation import IFluctuation
+from domain.interface.get_file import IGetFile
+from domain.interface.multiple_correction import IMultipleCorrection
+from factory.clustering import ClusteringFactory
+from factory.correction import CorrectionFactory
+from factory.dissimilarity import DissimilarityFactory
+from factory.fluctuation import FluctuationFactory
+from factory.get_file import GetFileFactory
 from usecase.output_clustering import OutputClustering
 from usecase.output_correlation import OutputCorrelation
 
@@ -30,6 +36,29 @@ def callback(
     print(f"multipletest: {multipletest}, method: {multipletest_method}")
 
 
+def factory_handlers(control, experiment, fluctuation_input, correction_input):
+    factory = GetFileFactory()
+    injector = Injector(factory.configure)
+    get_file_handler = injector.get(IGetFile)
+
+    factory = FluctuationFactory(
+        control,
+        experiment,
+        fluctuation_input["alpha"],
+    )
+    injector = Injector(factory.configure)
+    fluctuation_handler = injector.get(IFluctuation)
+
+    factory = CorrectionFactory(
+        correction_input["method"],
+        fluctuation_input["alpha"],
+    )
+    injector = Injector(factory.configure)
+    correction_handler = injector.get(IMultipleCorrection)
+
+    return (get_file_handler, fluctuation_handler, correction_handler)
+
+
 app = typer.Typer(callback=callback)
 
 
@@ -40,54 +69,26 @@ def correlation(
     corr_method: str = "pearson",
     dissimilarity: str = "abslinear",
 ):
-    fluctuation_method = None
-    d = None
-    try:
-        match fluctuation_input["method"]:
-            case "ftest":
-                fluctuation_method = FluctuationMethod.FTEST
-            case _:
-                raise ValueError(f"Invalid method: {fluctuation_input['method']}")
+    # handler生成
+    get_file_handler, fluctuation_handler, correction_handler = factory_handlers(
+        control,
+        experiment,
+        fluctuation_input,
+        correction_input,
+    )
+    factory = DissimilarityFactory(experiment, corr_method, dissimilarity)
+    injector = Injector(factory.configure)
+    dissimilarity_handler = injector.get(IDissimilarity)
 
-        wired = WireFluctuation(
-            control=control,
-            experiment=experiment,
-            fluctuation_method=fluctuation_method,
-            alpha=fluctuation_input["alpha"],
-            multipletest=correction_input["multipletest"],
-            multipletest_method=correction_input["method"],
-        )
+    # 等分散検定
+    feature_data = get_file_handler.run(featuredata_input["id"])
+    pvals, reject = fluctuation_handler.run(feature_data)
+    if correction_input["multipletest"]:
+        pvals_corrected, reject = correction_handler.run(pvals)
 
-        feature_data = wired.get_file_handler.run(featuredata_input["id"])
-        pvals, reject = wired.fluctuation_handler.run(feature_data)
-        if correction_input["multipletest"]:
-            pvals_corrected, reject = wired.multipletest_handler.run(pvals)
-            pvals = pvals_corrected
-
-        try:
-            match dissimilarity:
-                case "abslinear":
-                    feature_data.fluctuation = reject
-                    container = AbsLinearContainer()
-                    container.config.from_dict(
-                        {
-                            "experiment": experiment,
-                            "corr_method": corr_method,
-                            "dissimilarity": dissimilarity,
-                        }
-                    )
-                    container.wire(modules=[sys.modules[__name__]])
-                    dissimilarity_handler = container.handler()
-                    d = dissimilarity_handler.run(feature_data)
-                case _:
-                    raise ValueError(f"Invalid dissimilarity: {dissimilarity}")
-        except ValueError as e:
-            print(f"Error:\t{e}")
-            sys.exit(1)
-
-    except Exception as e:
-        print(e)
-        return
+    # 非類似度計算
+    feature_data.fluctuation = reject
+    d = dissimilarity_handler.run(feature_data)
 
     output = OutputCorrelation(
         _id=featuredata_input["id"],
@@ -109,6 +110,12 @@ def clustering(
     linkage_method: str = "average",
     criterion: str = "distance",
 ):
+    # handler 生成
+    factory = ClusteringFactory(cutoff, rank, linkage_method, criterion)
+    injector = Injector(factory.configure)
+    clustering_handler = injector.get(IClustering)
+
+    # クラスタリング
     d = correlation(
         control=control,
         experiment=experiment,
@@ -116,23 +123,7 @@ def clustering(
         dissimilarity=dissimilarity,
     )
 
-    container = ClusteringContainer()
-    container.config.from_dict(
-        {
-            "cutoff": cutoff,
-            "rank": rank,
-            "method": linkage_method,
-            "criterion": criterion,
-        }
-    )
-    container.wire(modules=[sys.modules[__name__]])
-    clustering_handler = container.handler()
-
-    try:
-        clusters = clustering_handler.run(d)
-    except ValueError as e:
-        print(f"Error:\t{e}")
-        sys.exit(1)
+    clusters = clustering_handler.run(d)
 
     # Output
     output = OutputClustering(

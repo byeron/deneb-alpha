@@ -1,11 +1,11 @@
 from abc import ABC, abstractmethod
 
-from domain.interface.multipletest_config import IMultipletestConfig
+from domain.interface.multiple_correction_config import IMultipleCorrectionConfig
 
 
-class IMultipletest(ABC):
+class IMultipleCorrection(ABC):
     @abstractmethod
-    def __init__(self, config: IMultipletestConfig):
+    def __init__(self, config: IMultipleCorrectionConfig):
         raise NotImplementedError("Subclasses must implement constructor")
 
     @abstractmethod
