@@ -1,16 +1,51 @@
+from usecase.abslinear import AbsLinear
+from domain.dissimilarity_config import DissimilarityConfig
+from domain.interface.dissimilarity_config import IDissimilarityConfig
+from domain.interface.dissimilarity import IDissimilarity
 import sys
 
 import typer_cloup as typer
 
 from container.clustering import ClusteringContainer
 from container.dissimilarity import AbsLinearContainer
-from ui.cli.wire import FluctuationMethod, WireFluctuation
+# from ui.cli.wire import FluctuationMethod, WireFluctuation
 from usecase.output_clustering import OutputClustering
 from usecase.output_correlation import OutputCorrelation
+from factory.fluctuation import FluctuationFactory
+from factory.get_file import GetFileFactory
+from factory.correction import CorrectionFactory
+from injector import Injector, Module
+from domain.interface.fluctuation import IFluctuation
+from domain.interface.get_file import IGetFile
+from domain.interface.multipletest import IMultipletest
 
 featuredata_input = {"id": None}
 fluctuation_input = {"alpha": 0.05, "method": "ftest"}
 correction_input = {"multipletest": True, "method": "fdr_bh"}
+
+
+class DissimilarityFactory(Module):
+    def __init__(self, experiment, corr_method, dissimilarity):
+        self.experiment = experiment
+        self.corr_method = corr_method
+        self.dissimilarity = dissimilarity
+
+    def configure(self, binder):
+        match self.dissimilarity:
+            case "abslinear":
+                binder.bind(
+                    IDissimilarityConfig,
+                    to=DissimilarityConfig(
+                        self.experiment,
+                        self.corr_method,
+                        self.dissimilarity,
+                    )
+                )
+
+                binder.bind(IDissimilarity, to=AbsLinear)
+
+            case _:
+                raise ValueError
 
 
 def callback(
@@ -30,6 +65,29 @@ def callback(
     print(f"multipletest: {multipletest}, method: {multipletest_method}")
 
 
+def factory_handlers(control, experiment, fluctuation_input, correction_input):
+    factory = GetFileFactory()
+    injector = Injector(factory.configure)
+    get_file_handler = injector.get(IGetFile)
+
+    factory = FluctuationFactory(
+        control,
+        experiment,
+        fluctuation_input["alpha"],
+    )
+    injector = Injector(factory.configure)
+    fluctuation_handler = injector.get(IFluctuation)
+
+    factory = CorrectionFactory(
+        correction_input["method"],
+        fluctuation_input["alpha"],
+    )
+    injector = Injector(factory.configure)
+    correction_handler = injector.get(IMultipletest)
+
+    return (get_file_handler, fluctuation_handler, correction_handler)
+
+
 app = typer.Typer(callback=callback)
 
 
@@ -40,54 +98,48 @@ def correlation(
     corr_method: str = "pearson",
     dissimilarity: str = "abslinear",
 ):
-    fluctuation_method = None
     d = None
+
+    get_file_handler, fluctuation_handler, correction_handler = factory_handlers(
+        control,
+        experiment,
+        fluctuation_input,
+        correction_input,
+    )
+
+    feature_data = get_file_handler.run(featuredata_input["id"])
+    pvals, reject = fluctuation_handler.run(feature_data)
+    if correction_input["multipletest"]:
+        pvals_corrected, reject = correction_handler.run(pvals)
+
+    factory = DissimilarityFactory(experiment, corr_method, dissimilarity)
+    injector = Injector(factory.configure)
+    dissimilarity_handler = injector.get(IDissimilarity)
+
+    feature_data.fluctuation = reject
+    d = dissimilarity_handler.run(feature_data)
+
+    """
     try:
-        match fluctuation_input["method"]:
-            case "ftest":
-                fluctuation_method = FluctuationMethod.FTEST
+        match dissimilarity:
+            case "abslinear":
+                container = AbsLinearContainer()
+                container.config.from_dict(
+                    {
+                        "experiment": experiment,
+                        "corr_method": corr_method,
+                        "dissimilarity": dissimilarity,
+                    }
+                )
+                container.wire(modules=[sys.modules[__name__]])
+                dissimilarity_handler = container.handler()
+                d = dissimilarity_handler.run(feature_data)
             case _:
-                raise ValueError(f"Invalid method: {fluctuation_input['method']}")
-
-        wired = WireFluctuation(
-            control=control,
-            experiment=experiment,
-            fluctuation_method=fluctuation_method,
-            alpha=fluctuation_input["alpha"],
-            multipletest=correction_input["multipletest"],
-            multipletest_method=correction_input["method"],
-        )
-
-        feature_data = wired.get_file_handler.run(featuredata_input["id"])
-        pvals, reject = wired.fluctuation_handler.run(feature_data)
-        if correction_input["multipletest"]:
-            pvals_corrected, reject = wired.multipletest_handler.run(pvals)
-            pvals = pvals_corrected
-
-        try:
-            match dissimilarity:
-                case "abslinear":
-                    feature_data.fluctuation = reject
-                    container = AbsLinearContainer()
-                    container.config.from_dict(
-                        {
-                            "experiment": experiment,
-                            "corr_method": corr_method,
-                            "dissimilarity": dissimilarity,
-                        }
-                    )
-                    container.wire(modules=[sys.modules[__name__]])
-                    dissimilarity_handler = container.handler()
-                    d = dissimilarity_handler.run(feature_data)
-                case _:
-                    raise ValueError(f"Invalid dissimilarity: {dissimilarity}")
-        except ValueError as e:
-            print(f"Error:\t{e}")
-            sys.exit(1)
-
-    except Exception as e:
-        print(e)
-        return
+                raise ValueError(f"Invalid dissimilarity: {dissimilarity}")
+    except ValueError as e:
+        print(f"Error:\t{e}")
+        sys.exit(1)
+    """
 
     output = OutputCorrelation(
         _id=featuredata_input["id"],
