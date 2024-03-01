@@ -5,11 +5,10 @@ from injector import Injector, Module
 
 from domain.interface.fluctuation import IFluctuation
 from domain.interface.get_file import IGetFile
-from domain.interface.multipletest import IMultipletest
+from domain.interface.multiple_correction import IMultipleCorrection
 from factory.correction import CorrectionFactory
 from factory.fluctuation import FluctuationFactory
 from factory.get_file import GetFileFactory
-from infrastructure.feature_data_repository import FeatureDataRepository
 
 # from ui.cli.wire import FluctuationMethod, WireFluctuation
 from usecase.output_fluctuation import OutputFluctuation
@@ -52,13 +51,13 @@ def ftest(
 
         factory = CorrectionFactory(correction_input["method"], alpha)
         injector = Injector(factory.configure)
-        multipletest_handler = injector.get(IMultipletest)
+        multiple_correction_handler = injector.get(IMultipleCorrection)
 
         feature_data = get_file_handler.run(featuredata_input["id"])
         pvals, reject = fluctuation_handler.run(feature_data)
 
         if correction_input["multipletest"]:
-            pvals_corrected, reject = multipletest_handler.run(pvals)
+            pvals_corrected, reject = multiple_correction_handler.run(pvals)
 
     except Exception as e:
         print(e)

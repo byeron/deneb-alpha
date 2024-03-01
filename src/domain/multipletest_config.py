@@ -3,12 +3,12 @@ from typing import Literal
 
 from injector import inject
 
-from domain.interface.multipletest_config import IMultipletestConfig
+from domain.interface.multiple_correction_config import IMultipleCorrectionConfig
 
 
 @inject
 @dataclass(frozen=True)
-class MultipletestConfig(IMultipletestConfig):
+class MultipletestConfig(IMultipleCorrectionConfig):
     method: Literal[
         "bonferroni",
         "sidak",

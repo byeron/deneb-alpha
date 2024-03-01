@@ -5,7 +5,7 @@ from domain.interface.clustering import IClustering
 from domain.interface.dissimilarity import IDissimilarity
 from domain.interface.fluctuation import IFluctuation
 from domain.interface.get_file import IGetFile
-from domain.interface.multipletest import IMultipletest
+from domain.interface.multiple_correction import IMultipleCorrection
 from factory.clustering import ClusteringFactory
 from factory.correction import CorrectionFactory
 from factory.dissimilarity import DissimilarityFactory
@@ -54,7 +54,7 @@ def factory_handlers(control, experiment, fluctuation_input, correction_input):
         fluctuation_input["alpha"],
     )
     injector = Injector(factory.configure)
-    correction_handler = injector.get(IMultipletest)
+    correction_handler = injector.get(IMultipleCorrection)
 
     return (get_file_handler, fluctuation_handler, correction_handler)
 

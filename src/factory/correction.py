@@ -1,7 +1,7 @@
 from injector import Module
 
-from domain.interface.multipletest import IMultipletest
-from domain.interface.multipletest_config import IMultipletestConfig
+from domain.interface.multiple_correction import IMultipleCorrection
+from domain.interface.multiple_correction_config import IMultipleCorrectionConfig
 from domain.multipletest_config import MultipletestConfig
 from usecase.multipletest import Multipletest
 
@@ -12,5 +12,5 @@ class CorrectionFactory(Module):
         self.alpha = alpha
 
     def configure(self, binder):
-        binder.bind(IMultipletestConfig, to=MultipletestConfig(self.method, self.alpha))
-        binder.bind(IMultipletest, to=Multipletest)
+        binder.bind(IMultipleCorrectionConfig, to=MultipletestConfig(self.method, self.alpha))
+        binder.bind(IMultipleCorrection, to=Multipletest)
