@@ -1,51 +1,23 @@
-from usecase.abslinear import AbsLinear
-from domain.dissimilarity_config import DissimilarityConfig
-from domain.interface.dissimilarity_config import IDissimilarityConfig
 from domain.interface.dissimilarity import IDissimilarity
 import sys
 
 import typer_cloup as typer
 
 from container.clustering import ClusteringContainer
-from container.dissimilarity import AbsLinearContainer
-# from ui.cli.wire import FluctuationMethod, WireFluctuation
 from usecase.output_clustering import OutputClustering
 from usecase.output_correlation import OutputCorrelation
 from factory.fluctuation import FluctuationFactory
 from factory.get_file import GetFileFactory
 from factory.correction import CorrectionFactory
-from injector import Injector, Module
+from injector import Injector
 from domain.interface.fluctuation import IFluctuation
 from domain.interface.get_file import IGetFile
 from domain.interface.multipletest import IMultipletest
+from factory.dissimilarity import DissimilarityFactory
 
 featuredata_input = {"id": None}
 fluctuation_input = {"alpha": 0.05, "method": "ftest"}
 correction_input = {"multipletest": True, "method": "fdr_bh"}
-
-
-class DissimilarityFactory(Module):
-    def __init__(self, experiment, corr_method, dissimilarity):
-        self.experiment = experiment
-        self.corr_method = corr_method
-        self.dissimilarity = dissimilarity
-
-    def configure(self, binder):
-        match self.dissimilarity:
-            case "abslinear":
-                binder.bind(
-                    IDissimilarityConfig,
-                    to=DissimilarityConfig(
-                        self.experiment,
-                        self.corr_method,
-                        self.dissimilarity,
-                    )
-                )
-
-                binder.bind(IDissimilarity, to=AbsLinear)
-
-            case _:
-                raise ValueError
 
 
 def callback(
@@ -118,28 +90,6 @@ def correlation(
 
     feature_data.fluctuation = reject
     d = dissimilarity_handler.run(feature_data)
-
-    """
-    try:
-        match dissimilarity:
-            case "abslinear":
-                container = AbsLinearContainer()
-                container.config.from_dict(
-                    {
-                        "experiment": experiment,
-                        "corr_method": corr_method,
-                        "dissimilarity": dissimilarity,
-                    }
-                )
-                container.wire(modules=[sys.modules[__name__]])
-                dissimilarity_handler = container.handler()
-                d = dissimilarity_handler.run(feature_data)
-            case _:
-                raise ValueError(f"Invalid dissimilarity: {dissimilarity}")
-    except ValueError as e:
-        print(f"Error:\t{e}")
-        sys.exit(1)
-    """
 
     output = OutputCorrelation(
         _id=featuredata_input["id"],
