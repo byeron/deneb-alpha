@@ -1,6 +1,6 @@
 from injector import Module
 from domain.interface.dissimilarity_config import IDissimilarityConfig
-from domain.dissimilarity_config import DissimilarityConfig
+from domain.abslinear_config import AbsLinearConfig
 from domain.interface.dissimilarity import IDissimilarity
 from usecase.abslinear import AbsLinear
 
@@ -16,7 +16,7 @@ class DissimilarityFactory(Module):
             case "abslinear":
                 binder.bind(
                     IDissimilarityConfig,
-                    to=DissimilarityConfig(
+                    to=AbsLinearConfig(
                         self.experiment,
                         self.corr_method,
                         self.dissimilarity,
