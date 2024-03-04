@@ -2,9 +2,11 @@ import shutil
 
 from domain.interface.delete_file import IDeleteFile
 from domain.interface.feature_data_repository import IFeatureDataRepository
+from injector import inject
 
 
 class DeleteFile(IDeleteFile):
+    @inject
     def __init__(
         self, repo: IFeatureDataRepository, output_dir: str = "./src/medium"
     ) -> None:
