@@ -1,7 +1,7 @@
-from domain.interface.dnb import IDNB
+from domain.interface.dnb_score import IDNBScore
 
 
-class DNB(IDNB):
+class DNBScore(IDNBScore):
     def __init__(self, fluctuation, network):
         super().__init__(fluctuation, network)
 
