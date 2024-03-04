@@ -1,5 +1,3 @@
-import sys
-
 import typer_cloup as typer
 
 from container.delete_file import DeleteFileContainer
@@ -53,9 +51,11 @@ def get() -> None:
 
 @app.command()
 def delete(file_id: str) -> None:
-    container = DeleteFileContainer()
-    container.config.from_yaml("./src/config.yml")
-    delete_file_handler = container.delete_file_handler()
+    factory = DeleteFileFactory(
+        "./src/config.yml"
+    )
+    injector = Injector(factory.configure)
+    delete_file_handler = injector.get(IDeleteFile)
     try:
         _id = delete_file_handler.run(file_id)
     except Exception as e:
