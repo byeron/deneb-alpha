@@ -3,9 +3,11 @@ import os
 from domain.feature_data import FeatureData
 from domain.interface.feature_data_repository import IFeatureDataRepository
 from domain.interface.register_file import IRegisterFile
+from injector import inject
 
 
 class RegisterFile(IRegisterFile):
+    @inject
     def __init__(
         self, repo: IFeatureDataRepository, output_dir: str = "./src/medium"
     ) -> None:

@@ -1,26 +1,28 @@
 import typer_cloup as typer
 
-from container.delete_file import DeleteFileContainer
-from container.get_files import GetFilesContainer
-from container.register_file import RegisterFileContainer
+from injector import Injector
+
+from domain.interface.register_file import IRegisterFile
+from domain.interface.get_files import IGetFiles
+from domain.interface.delete_file import IDeleteFile
+from factory.delete_file import DeleteFileFactory
+from factory.get_files import GetFilesFactory
+from factory.register_file import RegisterFileFactory
+
+
 
 app = typer.Typer()
 
 
 @app.command()
 def register(path: str) -> None:
-    container = RegisterFileContainer()
-    container.config.from_yaml("./src/config.yml")  # URL/REPO_DIR
-    container.config.from_dict(
-        {
-            "src_path": path,
-        }
+    factory = RegisterFileFactory(
+        "./src/config.yml"
     )
-    container.wire(modules=[sys.modules[__name__]])
-    register_file_handler = container.handler()
+    injector = Injector(factory.configure)
+    register_file_handler = injector.get(IRegisterFile)
     try:
         _id = register_file_handler.run(path)
-
     except Exception as e:
         print(e)
         return
