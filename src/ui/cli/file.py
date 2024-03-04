@@ -29,9 +29,11 @@ def register(path: str) -> None:
 
 @app.command()
 def get() -> None:
-    container = GetFilesContainer()
-    container.config.from_yaml("./src/config.yml")
-    get_files_handler = container.handler()
+    factory = GetFilesFactory(
+        "./src/config.yml"
+    )
+    injector = Injector(factory.configure)
+    get_files_handler = injector.get(IGetFiles)
     try:
         feature_files = get_files_handler.run()
     except Exception as e:
