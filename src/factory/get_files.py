@@ -1,15 +1,14 @@
-from domain.interface.get_files import IGetFiles
-from usecase.get_files import GetFiles
-from domain.url_str import UrlStr
-from domain.data_dir import DataDir
-from domain.interface.session_handler import ISessionHandler
-from infrastructure.session_handler import SessionHandler
-from domain.interface.feature_data_repository import IFeatureDataRepository
-from infrastructure.feature_data_repository import FeatureDataRepository
-
-
 import yaml
 from injector import Module
+
+from domain.data_dir import DataDir
+from domain.interface.feature_data_repository import IFeatureDataRepository
+from domain.interface.get_files import IGetFiles
+from domain.interface.session_handler import ISessionHandler
+from domain.url_str import UrlStr
+from infrastructure.feature_data_repository import FeatureDataRepository
+from infrastructure.session_handler import SessionHandler
+from usecase.get_files import GetFiles
 
 
 class GetFilesFactory(Module):

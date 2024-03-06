@@ -49,7 +49,9 @@ def ftest(
         injector = Injector(factory.configure)
         fluctuation_handler = injector.get(IFluctuation)
 
-        factory = CorrectionFactory(correction_input["method"], alpha)
+        factory = CorrectionFactory(
+            correction_input["method"], alpha, correction_input["multipletest"]
+        )
         injector = Injector(factory.configure)
         multiple_correction_handler = injector.get(IMultipleCorrection)
 

@@ -1,2 +1,3 @@
 url: sqlite:///./src/app_db.sqlite3
 repo_dir: ./src/uploads
+output_dir: ./src/medium

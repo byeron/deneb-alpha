@@ -16,6 +16,7 @@ class Multipletest(IMultipleCorrection):
 
         self.method = config.method
         self.alpha = config.alpha
+        self.apply = config.apply
 
     def run(
         self, pvalues: list[float]
@@ -27,3 +28,6 @@ class Multipletest(IMultipleCorrection):
         reject = [bool(r) for r in reject]
         pvals_corrected = [float(p) for p in pvals_corrected]
         return (pvals_corrected, reject)
+
+    def is_apply(self):
+        return self.apply
