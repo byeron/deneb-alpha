@@ -82,7 +82,8 @@ def score(
     dnb_score_handler = injector.get(IDNBScore)
 
     feature_data = get_file_handler.run(featuredata_input["id"])
-    _ = dnb_score_handler.run(feature_data)
+    result = dnb_score_handler.run(feature_data)
+    print(result)
 
 
 if __name__ == "__main__":
