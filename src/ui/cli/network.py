@@ -16,24 +16,24 @@ from usecase.output_correlation import OutputCorrelation
 
 featuredata_input = {"id": None}
 fluctuation_input = {"alpha": 0.05, "method": "ftest"}
-correction_input = {"multipletest": True, "method": "fdr_bh"}
+correction_input = {"multiple_correction": True, "method": "fdr_bh"}
 
 
 def callback(
     id: str,
     alpha: float = 0.05,
     fluctuation_method: str = "ftest",
-    multipletest: bool = True,
+    multiple_correction: bool = True,
     multipletest_method: str = "fdr_bh",
 ):
     featuredata_input["id"] = id
     fluctuation_input["alpha"] = alpha
     fluctuation_input["method"] = fluctuation_method
-    correction_input["multipletest"] = multipletest
-    if multipletest:
+    correction_input["multiple_correction"] = multiple_correction
+    if multiple_correction:
         correction_input["method"] = multipletest_method
     print(f"id: {id}")
-    print(f"multipletest: {multipletest}, method: {multipletest_method}")
+    print(f"multipletest: {multiple_correction}, method: {multipletest_method}")
 
 
 def factory_handlers(control, experiment, fluctuation_input, correction_input):
@@ -52,6 +52,7 @@ def factory_handlers(control, experiment, fluctuation_input, correction_input):
     factory = CorrectionFactory(
         correction_input["method"],
         fluctuation_input["alpha"],
+        correction_input["multiple_correction"],
     )
     injector = Injector(factory.configure)
     correction_handler = injector.get(IMultipleCorrection)
@@ -83,7 +84,7 @@ def correlation(
     # 等分散検定
     feature_data = get_file_handler.run(featuredata_input["id"])
     pvals, reject = fluctuation_handler.run(feature_data)
-    if correction_input["multipletest"]:
+    if correction_input["multiple_correction"]:
         pvals_corrected, reject = correction_handler.run(pvals)
 
     # 非類似度計算
