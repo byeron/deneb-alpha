@@ -3,12 +3,13 @@ import shutil
 from domain.interface.delete_file import IDeleteFile
 from domain.interface.feature_data_repository import IFeatureDataRepository
 from injector import inject
+from domain.output_dir import OutputDir
 
 
 class DeleteFile(IDeleteFile):
     @inject
     def __init__(
-        self, repo: IFeatureDataRepository, output_dir: str = "./src/medium"
+        self, repo: IFeatureDataRepository, output_dir: OutputDir
     ) -> None:
         self.repo = repo
         self.output_dir = output_dir
@@ -19,4 +20,4 @@ class DeleteFile(IDeleteFile):
         return _id
 
     def _delete_directory(self, _id: str) -> None:
-        shutil.rmtree(f"{self.output_dir}/{_id}")
+        shutil.rmtree(f"{self.output_dir.value}/{_id}")
