@@ -19,16 +19,17 @@ class DNBScore(IDNBScore):
     ):
         # super().__init__(fluctuation, network)
         self.fluctuation = fluctuation
+        self.correction = correction
         self.dissimilarity = dissimilarity
         self.clustering = clustering
 
     def run(self, feature_data: IFeatureData):
         pvals, rejects = self.fluctuation.run(feature_data)
-        """
-        if correction_input["multipletest"]:
-            pvals_corrected, rejects = correction_hander.run(pvals)
-        """
+
+        if self.correction.is_apply():
+            pvals_corrected, rejects = self.correction.run(pvals)
         feature_data.fluctuation = rejects
+
         d = self.dissimilarity.run(feature_data)
         clusters = self.clustering.run(d)
 

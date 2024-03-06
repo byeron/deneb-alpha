@@ -18,7 +18,7 @@ from domain.interface.dnb_score import IDNBScore
 
 featuredata_input = {"id": None}
 fluctuation_input = {"alpha": 0.05, "method": "ftest"}
-correction_input = {"multipletest": True, "method": "fdr_bh"}
+correction_input = {"multiple_correction": True, "method": "fdr_bh"}
 dissimilarity_input = {"method": "pearson", "metric": "abslinear"}
 clustering_input = {"cutoff": 0.5, "rank": 1,
                     "linkage_method": "average", "criterion": "distance"}
@@ -28,7 +28,7 @@ def callback(
     id: str,
     alpha: float = 0.05,
     fluctuation_method: str = "ftest",
-    multipletest: bool = True,
+    multiple_correction: bool = True,
     multipletest_method: str = "fdr_bh",
     dissimilarity_method: str = "pearson",
     dissimilarity_metric: str = "abslinear",
@@ -40,8 +40,8 @@ def callback(
     featuredata_input["id"] = id
     fluctuation_input["alpha"] = alpha
     fluctuation_input["method"] = fluctuation_method
-    correction_input["multipletest"] = multipletest
-    if multipletest:
+    correction_input["multiple_correction"] = multiple_correction
+    if multiple_correction:
         correction_input["method"] = multipletest_method
     dissimilarity_input["method"] = dissimilarity_method
     dissimilarity_input["metric"] = dissimilarity_metric
@@ -50,7 +50,7 @@ def callback(
     clustering_input["linkage_method"] = clustering_linkege_method
     clustering_input["criterion"] = clustering_criterion
     print(f"id: {id}")
-    print(f"multipletest: {multipletest}, method: {multipletest_method}")
+    print(f"multipletest: {multiple_correction}, method: {multipletest_method}")
 
 
 app = typer.Typer(callback=callback)
@@ -70,6 +70,7 @@ def score(
         control=control,
         experiment=experiment,
         alpha=fluctuation_input["alpha"],
+        is_apply_multiple_correction=correction_input["multiple_correction"],
         multiple_correction_method=correction_input["method"],
         corr_method=dissimilarity_input["method"],
         dissimilarity_metric=dissimilarity_input["metric"],

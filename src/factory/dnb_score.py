@@ -22,6 +22,7 @@ class DNBScoreFactory(Module):
             control,
             experiment,
             alpha,
+            is_apply_multiple_correction,
             multiple_correction_method,
             corr_method,
             dissimilarity_metric,
@@ -33,6 +34,7 @@ class DNBScoreFactory(Module):
         self.alpha = alpha
         self.control = control
         self.experiment = experiment
+        self.is_apply_multiple_correction = is_apply_multiple_correction
         self.multiple_correction_method = multiple_correction_method
         self.corr_method = corr_method
         self.dissimilarity_metric = dissimilarity_metric
@@ -53,6 +55,7 @@ class DNBScoreFactory(Module):
         config = MultipletestConfig(
             self.multiple_correction_method,
             self.alpha,
+            self.is_apply_multiple_correction
         )
         return Multipletest(config)
 
