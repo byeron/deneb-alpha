@@ -22,6 +22,7 @@ class MultipletestConfig(IMultipleCorrectionConfig):
         "fdr_tsbky",
     ]
     alpha: float
+    apply: bool
 
     def __post_init__(self):
         if not isinstance(self.method, str):
