@@ -1,6 +1,6 @@
 import typer_cloup as typer
 
-from ui.cli import file, fluctuation, network, dnb_score
+from ui.cli import dnb_score, file, fluctuation, network
 
 app = typer.Typer()
 app.add_sub(fluctuation.app, name="fluctuation")

@@ -1,21 +1,22 @@
-from domain.interface.dnb_score import IDNBScore
-from domain.interface.fluctuation import IFluctuation
-from domain.interface.dissimilarity import IDissimilarity
-from domain.interface.clustering import IClustering
-from domain.interface.multiple_correction import IMultipleCorrection
-from domain.interface.feature_data import IFeatureData
-from injector import inject
 import numpy as np
+from injector import inject
+
+from domain.interface.clustering import IClustering
+from domain.interface.dissimilarity import IDissimilarity
+from domain.interface.dnb_score import IDNBScore
+from domain.interface.feature_data import IFeatureData
+from domain.interface.fluctuation import IFluctuation
+from domain.interface.multiple_correction import IMultipleCorrection
 
 
 class DNBScore(IDNBScore):
     @inject
     def __init__(
-            self,
-            fluctuation: IFluctuation,
-            correction: IMultipleCorrection,
-            dissimilarity: IDissimilarity,
-            clustering: IClustering
+        self,
+        fluctuation: IFluctuation,
+        correction: IMultipleCorrection,
+        dissimilarity: IDissimilarity,
+        clustering: IClustering,
     ):
         # super().__init__(fluctuation, network)
         self.fluctuation = fluctuation

@@ -1,35 +1,35 @@
 from injector import Module
 
-from domain.interface.dnb_score import IDNBScore
-from domain.multipletest_config import MultipletestConfig
-from usecase.dnb_score import DNBScore
-from domain.interface.fluctuation import IFluctuation
-from usecase.ftest import Ftest
-from domain.ftest_config import FtestConfig
-from domain.interface.multiple_correction import IMultipleCorrection
-from usecase.multipletest import Multipletest
-from domain.interface.dissimilarity import IDissimilarity
-from usecase.abslinear import AbsLinear
 from domain.abslinear_config import AbsLinearConfig
-from domain.interface.clustering import IClustering
-from usecase.clustering import Clustering
 from domain.clustering_config import ClusteringConfig
+from domain.ftest_config import FtestConfig
+from domain.interface.clustering import IClustering
+from domain.interface.dissimilarity import IDissimilarity
+from domain.interface.dnb_score import IDNBScore
+from domain.interface.fluctuation import IFluctuation
+from domain.interface.multiple_correction import IMultipleCorrection
+from domain.multipletest_config import MultipletestConfig
+from usecase.abslinear import AbsLinear
+from usecase.clustering import Clustering
+from usecase.dnb_score import DNBScore
+from usecase.ftest import Ftest
+from usecase.multipletest import Multipletest
 
 
 class DNBScoreFactory(Module):
     def __init__(
         self,
-            control,
-            experiment,
-            alpha,
-            is_apply_multiple_correction,
-            multiple_correction_method,
-            corr_method,
-            dissimilarity_metric,
-            cutoff,
-            rank,
-            linkage_method,
-            criterion,
+        control,
+        experiment,
+        alpha,
+        is_apply_multiple_correction,
+        multiple_correction_method,
+        corr_method,
+        dissimilarity_metric,
+        cutoff,
+        rank,
+        linkage_method,
+        criterion,
     ):
         self.alpha = alpha
         self.control = control
@@ -55,7 +55,7 @@ class DNBScoreFactory(Module):
         config = MultipletestConfig(
             self.multiple_correction_method,
             self.alpha,
-            self.is_apply_multiple_correction
+            self.is_apply_multiple_correction,
         )
         return Multipletest(config)
 
@@ -63,9 +63,7 @@ class DNBScoreFactory(Module):
         match self.dissimilarity_metric:
             case "abslinear":
                 config = AbsLinearConfig(
-                    self.experiment,
-                    self.corr_method,
-                    self.dissimilarity_metric
+                    self.experiment, self.corr_method, self.dissimilarity_metric
                 )
                 return AbsLinear(config)
 

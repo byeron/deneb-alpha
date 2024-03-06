@@ -1,17 +1,16 @@
 import os
 
+from injector import inject
+
 from domain.feature_data import FeatureData
 from domain.interface.feature_data_repository import IFeatureDataRepository
 from domain.interface.register_file import IRegisterFile
-from injector import inject
 from domain.output_dir import OutputDir
 
 
 class RegisterFile(IRegisterFile):
     @inject
-    def __init__(
-        self, repo: IFeatureDataRepository, output_dir: OutputDir
-    ) -> None:
+    def __init__(self, repo: IFeatureDataRepository, output_dir: OutputDir) -> None:
         self.repo = repo
         self.output_dir = output_dir
 

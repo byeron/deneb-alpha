@@ -13,5 +13,8 @@ class CorrectionFactory(Module):
         self.apply = apply
 
     def configure(self, binder):
-        binder.bind(IMultipleCorrectionConfig, to=MultipletestConfig(self.method, self.alpha, self.apply))
+        binder.bind(
+            IMultipleCorrectionConfig,
+            to=MultipletestConfig(self.method, self.alpha, self.apply),
+        )
         binder.bind(IMultipleCorrection, to=Multipletest)

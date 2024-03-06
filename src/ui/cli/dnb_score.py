@@ -3,25 +3,29 @@ from injector import Injector
 
 from domain.interface.clustering import IClustering
 from domain.interface.dissimilarity import IDissimilarity
+from domain.interface.dnb_score import IDNBScore
 from domain.interface.fluctuation import IFluctuation
 from domain.interface.get_file import IGetFile
 from domain.interface.multiple_correction import IMultipleCorrection
 from factory.clustering import ClusteringFactory
 from factory.correction import CorrectionFactory
 from factory.dissimilarity import DissimilarityFactory
+from factory.dnb_score import DNBScoreFactory
 from factory.fluctuation import FluctuationFactory
 from factory.get_file import GetFileFactory
 from usecase.output_clustering import OutputClustering
 from usecase.output_correlation import OutputCorrelation
-from factory.dnb_score import DNBScoreFactory
-from domain.interface.dnb_score import IDNBScore
 
 featuredata_input = {"id": None}
 fluctuation_input = {"alpha": 0.05, "method": "ftest"}
 correction_input = {"multiple_correction": True, "method": "fdr_bh"}
 dissimilarity_input = {"method": "pearson", "metric": "abslinear"}
-clustering_input = {"cutoff": 0.5, "rank": 1,
-                    "linkage_method": "average", "criterion": "distance"}
+clustering_input = {
+    "cutoff": 0.5,
+    "rank": 1,
+    "linkage_method": "average",
+    "criterion": "distance",
+}
 
 
 def callback(
@@ -57,10 +61,7 @@ app = typer.Typer(callback=callback)
 
 
 @app.command()
-def score(
-        control: str = "control",
-        experiment: str = "experiment"
-):
+def score(control: str = "control", experiment: str = "experiment"):
     # handler生成
     factory = GetFileFactory()
     injector = Injector(factory.configure)

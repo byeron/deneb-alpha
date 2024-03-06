@@ -1,24 +1,19 @@
 import typer_cloup as typer
-
 from injector import Injector
 
-from domain.interface.register_file import IRegisterFile
-from domain.interface.get_files import IGetFiles
 from domain.interface.delete_file import IDeleteFile
+from domain.interface.get_files import IGetFiles
+from domain.interface.register_file import IRegisterFile
 from factory.delete_file import DeleteFileFactory
 from factory.get_files import GetFilesFactory
 from factory.register_file import RegisterFileFactory
-
-
 
 app = typer.Typer()
 
 
 @app.command()
 def register(path: str) -> None:
-    factory = RegisterFileFactory(
-        "./src/config.yml"
-    )
+    factory = RegisterFileFactory("./src/config.yml")
     injector = Injector(factory.configure)
     register_file_handler = injector.get(IRegisterFile)
     try:
@@ -31,9 +26,7 @@ def register(path: str) -> None:
 
 @app.command()
 def get() -> None:
-    factory = GetFilesFactory(
-        "./src/config.yml"
-    )
+    factory = GetFilesFactory("./src/config.yml")
     injector = Injector(factory.configure)
     get_files_handler = injector.get(IGetFiles)
     try:
@@ -55,9 +48,7 @@ def get() -> None:
 
 @app.command()
 def delete(file_id: str) -> None:
-    factory = DeleteFileFactory(
-        "./src/config.yml"
-    )
+    factory = DeleteFileFactory("./src/config.yml")
     injector = Injector(factory.configure)
     delete_file_handler = injector.get(IDeleteFile)
     try:
