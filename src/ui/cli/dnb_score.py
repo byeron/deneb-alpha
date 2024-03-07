@@ -1,20 +1,11 @@
 import typer_cloup as typer
 from injector import Injector
 
-from domain.interface.clustering import IClustering
-from domain.interface.dissimilarity import IDissimilarity
 from domain.interface.dnb_score import IDNBScore
-from domain.interface.fluctuation import IFluctuation
 from domain.interface.get_file import IGetFile
-from domain.interface.multiple_correction import IMultipleCorrection
-from factory.clustering import ClusteringFactory
-from factory.correction import CorrectionFactory
-from factory.dissimilarity import DissimilarityFactory
 from factory.dnb_score import DNBScoreFactory
-from factory.fluctuation import FluctuationFactory
 from factory.get_file import GetFileFactory
-from usecase.output_clustering import OutputClustering
-from usecase.output_correlation import OutputCorrelation
+from usecase.output_dnb_score import OutputDNBScore
 
 featuredata_input = {"id": None}
 fluctuation_input = {"alpha": 0.05, "method": "ftest"}
@@ -85,7 +76,12 @@ def score(control: str = "control", experiment: str = "experiment"):
 
     feature_data = get_file_handler.run(featuredata_input["id"])
     result = dnb_score_handler.run(feature_data)
-    print(result)
+
+    output = OutputDNBScore(
+        _id=featuredata_input["id"],
+    )
+    r = output.run(result)
+    print(r)
 
 
 if __name__ == "__main__":
