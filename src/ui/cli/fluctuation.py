@@ -74,6 +74,7 @@ def ftest(
         pvals_corrected=pvals_corrected,
     )
     print(result)
+    print(f"rejected: {sum(result.loc[:, 'reject'].to_list())}")
 
 
 if __name__ == "__main__":
