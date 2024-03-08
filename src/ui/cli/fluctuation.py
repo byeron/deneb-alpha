@@ -1,7 +1,7 @@
 import typer_cloup as typer
 
 # for injection
-from injector import Injector, Module
+from injector import Injector
 
 from domain.interface.fluctuation import IFluctuation
 from domain.interface.get_file import IGetFile
@@ -74,6 +74,7 @@ def ftest(
         pvals_corrected=pvals_corrected,
     )
     print(result)
+    print(f"rejected: {sum(result.loc[:, 'reject'].to_list())}")
 
 
 if __name__ == "__main__":
