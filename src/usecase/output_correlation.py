@@ -1,5 +1,6 @@
-import pandas as pd
 import json
+
+import pandas as pd
 
 from domain.interface.output_correlation import IOutputCorrelation
 

@@ -1,5 +1,6 @@
-import pandas as pd
 import json
+
+import pandas as pd
 
 from domain.interface.output_dnb_score import IOutputDNBScore
 
@@ -21,11 +22,14 @@ class OutputDNBScore(IOutputDNBScore):
             dnb_score = e["dnb_score"]
             # features = e["featrures"]
 
-            df = pd.DataFrame(columns=list(std_dev.keys()), index=["dnb_score", "std_deviation", "corr_strength"])
+            df = pd.DataFrame(
+                columns=list(std_dev.keys()),
+                index=["dnb_score", "std_deviation", "corr_strength"],
+            )
             for k, v in std_dev.items():
-                df.loc["std_deviation", k]=v
-                df.loc["corr_strength", k]=corr_str[k]
-                df.loc["dnb_score", k]=dnb_score[k]
+                df.loc["std_deviation", k] = v
+                df.loc["corr_strength", k] = corr_str[k]
+                df.loc["dnb_score", k] = dnb_score[k]
             df.to_csv(f"{self.output_dir}/score_{n}.csv", index=True)
             result.append(df)
 

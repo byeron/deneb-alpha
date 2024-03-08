@@ -56,7 +56,7 @@ class DNBScore(IDNBScore):
                     "std_deviation": ave_standard_devs,
                     "corr_strength": ave_corr_strengths,
                     "dnb_score": dnb_scores,
-                    "features": c
+                    "features": c,
                 }
             )
 

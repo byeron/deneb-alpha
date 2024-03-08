@@ -1,11 +1,12 @@
-import yaml
-import os
 import json
-import pandas as pd
+import os
+
 import matplotlib.pyplot as plt
+import pandas as pd
+import yaml
 
 
-class VDNBScore():
+class VDNBScore:
     def __init__(self, config_path: str):
         with open(config_path, "r") as f:
             data = yaml.safe_load(f)
@@ -21,27 +22,31 @@ class VDNBScore():
 
         d = data.loc["dnb_score", :]
         ax = fig.add_subplot(1, 3, 1)
-        ax.plot(d.to_numpy())
+        ax.plot(d.to_numpy(), color="tab:red", marker="o")
         ax.set_ylabel("DNB Score")
         ax.set_xticks([n for n, _ in enumerate(d.index)])
         ax.set_xticklabels(list(d.index))
         ax.set_xlabel("state")
+        ax.grid(which="both", axis="both")
 
         d = data.loc["std_deviation", :]
         ax = fig.add_subplot(1, 3, 2)
-        ax.plot(d.to_numpy())
+        ax.plot(d.to_numpy(), color="tab:blue", marker="o")
         ax.set_ylabel("Average Std")
         ax.set_xticks([n for n, _ in enumerate(d.index)])
         ax.set_xticklabels(list(d.index))
         ax.set_xlabel("state")
+        ax.grid(which="both", axis="both")
 
         d = data.loc["corr_strength", :]
         ax = fig.add_subplot(1, 3, 3)
-        ax.plot(d.to_numpy())
+        ax.plot(d.to_numpy(), color="tab:purple", marker="o")
         ax.set_ylabel("Average Corr")
         ax.set_xticks([n for n, _ in enumerate(d.index)])
         ax.set_xticklabels(list(d.index))
         ax.set_xlabel("state")
+        # ax.set_ylim(-1, 1)
+        ax.grid(which="both", axis="both")
 
         plt.tight_layout()
         fig.savefig(f"{self.img_path}/score_{nn}.png")
@@ -53,7 +58,6 @@ class VDNBScore():
 
         for e in list(score[0]["dnb_score"].keys()):
             if e not in order:
-                print(e)
                 raise ValueError("state name is incorrect")
 
         for nn, s in enumerate(score):
@@ -91,5 +95,7 @@ class VDNBScore():
         with open(f"{self.medium_dir}/{_id}/score.json") as f:
             d = json.load(f)
         self.plot(d, order)
+
+        print(self.img_path)
 
         return
