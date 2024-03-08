@@ -1,6 +1,9 @@
 import typer_cloup as typer
+from typing import List, Optional
+from typing_extensions import Annotated
 
 from usecase.visualize_dendrogram import VDendrogram
+from usecase.visualize_dnb_score import VDNBScore
 
 featuredata_input = {"id": None}
 
@@ -18,6 +21,13 @@ def dendrogram(cutoff: float = 0.3, method: str = "average") -> None:
 
     v = VDendrogram("./src/config.yml")
     v.run(featuredata_input["id"], cutoff, method)
+
+
+@app.command()
+def score(state: Optional[List[str]] = typer.Option(None)):
+    print(state)
+    v = VDNBScore("./src/config.yml")
+    v.run(featuredata_input["id"], order=state)
 
 
 if __name__ == "__main__":
