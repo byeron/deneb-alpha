@@ -164,6 +164,9 @@ src/uploads/*.csv
 src/*.sqlite3
 # mediumディレクトリとそのサブディレクトリの.csvファイルはgit管理しない
 src/medium/**/*.csv
-data/**
+src/medium/**/*.json
+data/*.csv
+img/*.pdf
+img/*.png
 
 .gitconfig
