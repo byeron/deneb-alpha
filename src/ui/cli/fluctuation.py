@@ -1,4 +1,5 @@
 import typer_cloup as typer
+
 # for injection
 from injector import Injector
 
@@ -8,7 +9,7 @@ from domain.interface.multiple_correction import IMultipleCorrection
 from factory.correction import CorrectionFactory
 from factory.fluctuation import FluctuationFactory
 from factory.get_file import GetFileFactory
-# from ui.cli.wire import FluctuationMethod, WireFluctuation
+from usecase.output_fluctuated_features import OutputFluctuatedFeatures
 from usecase.output_fluctuation import OutputFluctuation
 
 # Default parameters for correction_input
@@ -73,6 +74,9 @@ def ftest(
     )
     print(result)
     print(f"rejected: {sum(result.loc[:, 'reject'].to_list())}")
+
+    output = OutputFluctuatedFeatures(_id=featuredata_input["id"])
+    _ = output.run(feature_data, reject)
 
 
 if __name__ == "__main__":
