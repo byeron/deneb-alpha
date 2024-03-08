@@ -1,6 +1,6 @@
+import json
 import os
 from collections import OrderedDict
-import json
 
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -47,13 +47,20 @@ class VHeatmap:
 
         for (k, v), ax in zip(corrs.items(), grid):
             im = ax.imshow(
-                v, vmin=vmin, vmax=vmax,
-                cmap="RdBu_r", interpolation="none",
+                v,
+                vmin=vmin,
+                vmax=vmax,
+                cmap="RdBu_r",
+                interpolation="none",
             )
             ax.set_xticks([n for n, i in enumerate(v.index) if n % label_span == 0])
-            ax.set_xticklabels([i for n, i in enumerate(v.index) if n % label_span == 0], rotation=0)
+            ax.set_xticklabels(
+                [i for n, i in enumerate(v.index) if n % label_span == 0], rotation=0
+            )
             ax.set_yticks([n for n, i in enumerate(v.index) if n % label_span == 0])
-            ax.set_yticklabels([i for n, i in enumerate(v.index) if n % label_span == 0])
+            ax.set_yticklabels(
+                [i for n, i in enumerate(v.index) if n % label_span == 0]
+            )
             ax.set_title(f"{k}")
         _ = grid.cbar_axes[0].colorbar(im)
 

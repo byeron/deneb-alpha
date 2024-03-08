@@ -1,7 +1,7 @@
 import json
 
-from domain.interface.output_heatmap import IOutputHeatmap
 from domain.feature_data import FeatureData
+from domain.interface.output_heatmap import IOutputHeatmap
 
 
 class OutputHeatmap(IOutputHeatmap):
@@ -13,9 +13,9 @@ class OutputHeatmap(IOutputHeatmap):
         self.output_path = f"{dst_dir}/{_id}/heatmap.json"
 
     def run(
-            self,
-            data: FeatureData,
-            clusters: list[list[str]],
+        self,
+        data: FeatureData,
+        clusters: list[list[str]],
     ):
         result = []
         for i, elements in enumerate(clusters):

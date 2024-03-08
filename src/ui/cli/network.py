@@ -34,8 +34,7 @@ def callback(
     if multiple_correction:
         correction_input["method"] = multipletest_method
     print(f"id: {id}")
-    print(
-        f"multipletest: {multiple_correction}, method: {multipletest_method}")
+    print(f"multipletest: {multiple_correction}, method: {multipletest_method}")
 
 
 def factory_handlers(control, experiment, fluctuation_input, correction_input):
