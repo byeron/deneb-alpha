@@ -1,7 +1,7 @@
 import typer_cloup as typer
 
 # for injection
-from injector import Injector, Module
+from injector import Injector
 
 from domain.interface.fluctuation import IFluctuation
 from domain.interface.get_file import IGetFile
