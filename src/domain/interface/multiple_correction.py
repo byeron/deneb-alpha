@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 
-from domain.interface.multiple_correction_config import \
-    IMultipleCorrectionConfig
+from domain.interface.multiple_correction_config import IMultipleCorrectionConfig
 
 
 class IMultipleCorrection(ABC):

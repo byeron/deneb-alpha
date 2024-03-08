@@ -13,6 +13,7 @@ from factory.fluctuation import FluctuationFactory
 from factory.get_file import GetFileFactory
 from usecase.output_clustering import OutputClustering
 from usecase.output_correlation import OutputCorrelation
+from usecase.output_heatmap import OutputHeatmap
 
 featuredata_input = {"id": None}
 fluctuation_input = {"alpha": 0.05, "method": "ftest"}
@@ -33,7 +34,8 @@ def callback(
     if multiple_correction:
         correction_input["method"] = multipletest_method
     print(f"id: {id}")
-    print(f"multipletest: {multiple_correction}, method: {multipletest_method}")
+    print(
+        f"multipletest: {multiple_correction}, method: {multipletest_method}")
 
 
 def factory_handlers(control, experiment, fluctuation_input, correction_input):
@@ -134,6 +136,16 @@ def clustering(
     )
     output.run(clusters[1])
     print(clusters)
+
+    factory = GetFileFactory()
+    injector = Injector(factory.configure)
+    get_file_handler = injector.get(IGetFile)
+    feature_data = get_file_handler.run(featuredata_input["id"])
+    output = OutputHeatmap(_id=featuredata_input["id"])
+    output.run(
+        feature_data,
+        clusters[1],
+    )
 
 
 if __name__ == "__main__":

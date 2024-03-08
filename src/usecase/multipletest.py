@@ -2,8 +2,7 @@ from injector import inject
 from statsmodels.stats.multitest import multipletests
 
 from domain.interface.multiple_correction import IMultipleCorrection
-from domain.interface.multiple_correction_config import \
-    IMultipleCorrectionConfig
+from domain.interface.multiple_correction_config import IMultipleCorrectionConfig
 
 
 class Multipletest(IMultipleCorrection):

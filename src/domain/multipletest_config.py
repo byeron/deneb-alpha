@@ -3,8 +3,7 @@ from typing import Literal
 
 from injector import inject
 
-from domain.interface.multiple_correction_config import \
-    IMultipleCorrectionConfig
+from domain.interface.multiple_correction_config import IMultipleCorrectionConfig
 
 
 @inject
