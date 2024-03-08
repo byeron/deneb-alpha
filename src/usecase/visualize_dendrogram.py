@@ -1,13 +1,14 @@
-import yaml
-import os
 import json
+import os
+
+import matplotlib.pyplot as plt
 import pandas as pd
+import yaml
 from scipy.cluster.hierarchy import dendrogram, linkage
 from scipy.spatial.distance import squareform
-import matplotlib.pyplot as plt
 
 
-class VDendrogram():
+class VDendrogram:
     def __init__(self, config_path: str):
         with open(config_path, "r") as f:
             data = yaml.safe_load(f)

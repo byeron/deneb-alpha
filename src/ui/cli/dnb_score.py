@@ -81,7 +81,9 @@ def score(control: str = "control", experiment: str = "experiment"):
         _id=featuredata_input["id"],
     )
     r = output.run(result)
-    print(r)
+    for n, rr in enumerate(r):
+        print(f"#{n+1}")
+        print(rr)
 
 
 if __name__ == "__main__":
