@@ -49,10 +49,10 @@ class VDendrogram():
 
         # create images
         features = df.columns
-        dissimirality = df.to_numpy()
+        dissimilarity = df.to_numpy()
 
-        dissimirality = squareform(dissimirality)
-        linkaged = linkage(dissimirality, method=method)
+        dissimilarity = squareform(dissimilarity)
+        linkaged = linkage(dissimilarity, method=method)
 
         self.plot(linkaged, features, cutoff=cutoff)
 
