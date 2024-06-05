@@ -31,7 +31,7 @@ class VHeatmap:
             for n, (t, d) in enumerate(df.groupby(level=0)):
                 corrs[t] = d.corr()
 
-        figsize = (9, 3)
+        figsize = (9, 4)
         dpi = 300
         fig = plt.figure(figsize=figsize, dpi=dpi)
         grid = ImageGrid(
@@ -55,17 +55,19 @@ class VHeatmap:
             )
             ax.set_xticks([n for n, i in enumerate(v.index) if n % label_span == 0])
             ax.set_xticklabels(
-                [i for n, i in enumerate(v.index) if n % label_span == 0], rotation=0
+                [i for n, i in enumerate(v.index) if n % label_span == 0], rotation=10
             )
             ax.set_yticks([n for n, i in enumerate(v.index) if n % label_span == 0])
             ax.set_yticklabels(
                 [i for n, i in enumerate(v.index) if n % label_span == 0]
             )
             ax.set_title(f"{k}")
+            ax.tick_params(which="both", direction="in", axis="both")
         _ = grid.cbar_axes[0].colorbar(im)
+        grid.cbar_axes[0].tick_params(which="both", direction="in", axis="both")
 
-        fig.savefig(f"{self.img_path}/heatmap_{nn+1}.png")
-        fig.savefig(f"{self.img_path}/heatmap_{nn+1}.pdf")
+        fig.savefig(f"{self.img_path}/heatmap_{nn+1}.png", bbox_inches="tight")
+        fig.savefig(f"{self.img_path}/heatmap_{nn+1}.pdf", bbox_inches="tight")
 
     def run(
         self,
