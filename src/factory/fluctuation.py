@@ -5,6 +5,8 @@ from domain.interface.fluctuation import IFluctuation
 from domain.mad_ratio_config import MadRatioConfig
 from usecase.ftest import Ftest
 from usecase.mad_ratio import MADRatio
+from domain.mad_ftest_config import MADFtestConfig
+from usecase.mad_ftest import MADFtest
 
 
 class FluctuationFactory(Module):
@@ -28,6 +30,14 @@ class FluctuationFactory(Module):
                     threshold=mad_threshold,
                 )
                 print(self.config)
+            case "mad-ftest":
+                if alpha is None:
+                    raise ValueError("alpha is required for ftest method")
+                self.config = MADFtestConfig(
+                    control=control,
+                    experiment=experiment,
+                    alpha=alpha,
+                )
             case _:
                 raise ValueError("method is not supported")
 
@@ -37,8 +47,10 @@ class FluctuationFactory(Module):
                 return Ftest(self.config)
             case "mad-ratio":
                 return MADRatio(self.config)
+            case "mad-ftest":
+                return MADFtest(self.config)
             case _:
-                raise ValueError
+                raise ValueError("method is not supported in factory")
 
     def configure(self, binder):
         binder.bind(IFluctuation, to=self.factory())
