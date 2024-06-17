@@ -1,5 +1,5 @@
-from scipy.stats import f
 import numpy as np
+from scipy.stats import f
 
 from domain.feature_data import FeatureData
 from domain.interface.fluctuation_config import IFluctuationConfig
@@ -40,8 +40,8 @@ class MADFtest(Fluctuation):
         # mad_expr *= 1.4826
 
         # 分散と同じスケールへ変更
-        var_ctrl = mad_ctrl ** 2
-        var_expr = mad_expr ** 2
+        var_ctrl = mad_ctrl**2
+        var_expr = mad_expr**2
 
         f_value = var_expr / var_ctrl
         p_value = f.sf(f_value, len(expr) - 1, len(ctrl) - 1)

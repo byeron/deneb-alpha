@@ -2,11 +2,13 @@ from injector import Module
 
 from domain.ftest_config import FtestConfig
 from domain.interface.fluctuation import IFluctuation
+from domain.levene_test_config import LeveneTestConfig
+from domain.mad_ftest_config import MADFtestConfig
 from domain.mad_ratio_config import MadRatioConfig
 from usecase.ftest import Ftest
-from usecase.mad_ratio import MADRatio
-from domain.mad_ftest_config import MADFtestConfig
+from usecase.levene_test import LeveneTest
 from usecase.mad_ftest import MADFtest
+from usecase.mad_ratio import MADRatio
 
 
 class FluctuationFactory(Module):
@@ -38,6 +40,14 @@ class FluctuationFactory(Module):
                     experiment=experiment,
                     alpha=alpha,
                 )
+            case "levene":
+                if alpha is None:
+                    raise ValueError("alpha is required for ftest method")
+                self.config = LeveneTestConfig(
+                    control=control,
+                    experiment=experiment,
+                    alpha=alpha,
+                )
             case _:
                 raise ValueError("method is not supported")
 
@@ -49,6 +59,8 @@ class FluctuationFactory(Module):
                 return MADRatio(self.config)
             case "mad-ftest":
                 return MADFtest(self.config)
+            case "levene":
+                return LeveneTest(self.config)
             case _:
                 raise ValueError("method is not supported in factory")
 
