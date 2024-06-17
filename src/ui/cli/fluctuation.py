@@ -30,6 +30,56 @@ app = typer.Typer(callback=callback)
 
 
 @app.command()
+def madratio(
+    control: str = "control",
+    experiment: str = "experiment",
+    mad_threshold: float = 2.0,
+):
+    print(mad_threshold)
+    print(
+        f"control: {control}, experiment: {experiment}, MAD threshold: {mad_threshold}"
+    )
+
+    pvals_corrected = None
+
+    try:
+        factory = GetFileFactory()
+        injector = Injector(factory.configure)
+        get_file_handler = injector.get(IGetFile)
+
+        method = "mad-ratio"
+        factory = FluctuationFactory(
+            control,
+            experiment,
+            method,
+            mad_threshold=mad_threshold,
+        )
+        injector = Injector(factory.configure)
+        fluctuation_handler = injector.get(IFluctuation)
+
+        feature_data = get_file_handler.run(featuredata_input["id"])
+        pvals, reject = fluctuation_handler.run(feature_data)
+
+    except Exception as e:
+        print(e)
+        return
+
+    # Output
+    output = OutputFluctuation(_id=featuredata_input["id"], method=method)
+    result = output.run(
+        features=feature_data.features,
+        pvals=pvals,
+        reject=reject,
+        pvals_corrected=pvals_corrected,
+    )
+    print(result)
+    print(f"rejected: {sum(result.loc[:, 'reject'].to_list())}")
+
+    output = OutputFluctuatedFeatures(_id=featuredata_input["id"])
+    _ = output.run(feature_data, reject)
+
+
+@app.command()
 def ftest(
     control: str = "control",
     experiment: str = "experiment",
@@ -44,7 +94,13 @@ def ftest(
         injector = Injector(factory.configure)
         get_file_handler = injector.get(IGetFile)
 
-        factory = FluctuationFactory(control, experiment, alpha)
+        method = "ftest"
+        factory = FluctuationFactory(
+            control,
+            experiment,
+            method,
+            alpha=alpha,
+        )
         injector = Injector(factory.configure)
         fluctuation_handler = injector.get(IFluctuation)
 
