@@ -45,6 +45,7 @@ def factory_handlers(control, experiment, fluctuation_input, correction_input):
     factory = FluctuationFactory(
         control,
         experiment,
+        fluctuation_input["method"],
         fluctuation_input["alpha"],
     )
     injector = Injector(factory.configure)
