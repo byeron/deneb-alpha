@@ -12,7 +12,7 @@ from usecase.mad_ratio import MADRatio
 
 
 class FluctuationFactory(Module):
-    def __init__(self, control, experiment, method, alpha=None, mad_threshold=None):
+    def __init__(self, method, control, experiment=None, alpha=None, mad_threshold=None):
         self.method = method
         match method:
             case "ftest":

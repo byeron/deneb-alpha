@@ -45,9 +45,9 @@ def madftest(
 
         method = "mad-ftest"
         factory = FluctuationFactory(
-            control,
-            experiment,
-            method,
+            control=control,
+            experiment=experiment,
+            method=method,
             alpha=alpha,
         )
         injector = Injector(factory.configure)
@@ -100,9 +100,9 @@ def levene(
 
         method = "levene"
         factory = FluctuationFactory(
-            control,
-            experiment,
-            method,
+            control=control,
+            experiment=experiment,
+            method=method,
             alpha=alpha,
         )
         injector = Injector(factory.configure)
@@ -158,9 +158,9 @@ def madratio(
 
         method = "mad-ratio"
         factory = FluctuationFactory(
-            control,
-            experiment,
-            method,
+            control=control,
+            experiment=experiment,
+            method=method,
             mad_threshold=mad_threshold,
         )
         injector = Injector(factory.configure)
@@ -205,9 +205,9 @@ def ftest(
 
         method = "ftest"
         factory = FluctuationFactory(
-            control,
-            experiment,
-            method,
+            control=control,
+            experiment=experiment,
+            method=method,
             alpha=alpha,
         )
         injector = Injector(factory.configure)
