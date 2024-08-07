@@ -30,7 +30,7 @@ app = typer.Typer(callback=callback)
 
 
 @app.command()
-def madftest(
+def mad_ftest(
     control: str = "control",
     experiment: str = "experiment",
     alpha: float = 0.05,
@@ -140,7 +140,7 @@ def levene(
 
 
 @app.command()
-def madratio(
+def mad_ratio(
     control: str = "control",
     experiment: str = "experiment",
     mad_threshold: float = 2.0,
