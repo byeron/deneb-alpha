@@ -10,8 +10,8 @@ from factory.correction import CorrectionFactory
 from factory.fluctuation import FluctuationFactory
 from factory.get_file import GetFileFactory
 from usecase.output_fluctuated_features import OutputFluctuatedFeatures
-from usecase.output_fluctuation_pval import OutputFluctuationPval
 from usecase.output_fluctuation_diff import OutputFluctuationDiff
+from usecase.output_fluctuation_pval import OutputFluctuationPval
 
 # Default parameters for correction_input
 featuredata_input = {"id": None}
@@ -94,9 +94,7 @@ def var_ratio(
     robust: bool = False,
 ):
     print(f"method: var-ratio, robust: {robust}")
-    print(
-        f"control: {control}, experiment: {experiment}, threshold: {threshold}"
-    )
+    print(f"control: {control}, experiment: {experiment}, threshold: {threshold}")
 
     try:
         factory = GetFileFactory()
@@ -207,9 +205,7 @@ def inner_var(
     robust: bool = False,
 ):
     print("method: inner-var")
-    print(
-        f"control: No, experiment: {experiment}, Threshold: {threshold}"
-    )
+    print(f"control: No, experiment: {experiment}, Threshold: {threshold}")
 
     try:
         factory = GetFileFactory()

@@ -4,17 +4,17 @@ from domain.ftest_config import FtestConfig
 from domain.interface.fluctuation import IFluctuation
 from domain.levene_test_config import LeveneTestConfig
 from domain.mad_ftest_config import MadFtestConfig
+from domain.mad_inner_var_config import MadInnerVarConfig
 from domain.mad_ratio_config import MadRatioConfig
+from domain.std_inner_var_config import StdInnerVarConfig
+from domain.std_ratio_config import StdRatioConfig
 from usecase.ftest import Ftest
 from usecase.levene_test import LeveneTest
 from usecase.mad_ftest import MadFtest
-from usecase.mad_ratio import MadRatio
-from usecase.std_ratio import StdRatio
-from usecase.std_inner_var import StdInnerVar
-from domain.std_inner_var_config import StdInnerVarConfig
 from usecase.mad_inner_var import MadInnerVar
-from domain.mad_inner_var_config import MadInnerVarConfig
-from domain.std_ratio_config import StdRatioConfig
+from usecase.mad_ratio import MadRatio
+from usecase.std_inner_var import StdInnerVar
+from usecase.std_ratio import StdRatio
 
 
 class FluctuationFactory(Module):
