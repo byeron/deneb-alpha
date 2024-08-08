@@ -43,10 +43,10 @@ def factory_handlers(control, experiment, fluctuation_input, correction_input):
     get_file_handler = injector.get(IGetFile)
 
     factory = FluctuationFactory(
-        control,
-        experiment,
-        fluctuation_input["method"],
-        fluctuation_input["alpha"],
+        control=control,
+        experiment=experiment,
+        method=fluctuation_input["method"],
+        alpha=fluctuation_input["alpha"],
     )
     injector = Injector(factory.configure)
     fluctuation_handler = injector.get(IFluctuation)

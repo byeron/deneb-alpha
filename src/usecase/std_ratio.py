@@ -1,11 +1,9 @@
-import numpy as np
-
 from domain.feature_data import FeatureData
 from domain.interface.fluctuation_config import IFluctuationConfig
 from usecase.fluctuation import Fluctuation
 
 
-class MadRatio(Fluctuation):
+class StdRatio(Fluctuation):
     def __init__(self, config: IFluctuationConfig):
         super().__init__(config)
 
@@ -31,13 +29,11 @@ class MadRatio(Fluctuation):
         ctrl = df.loc[self.control, :]
         expr = df.loc[self.experiment, :]
 
-        # 各列ごとの中央絶対偏差を計算
-        # controlのMAD
-        mad_ctrl = np.median(np.abs(ctrl - ctrl.median(axis=0)), axis=0)
-        mad_expr = np.median(np.abs(expr - expr.median(axis=0)), axis=0)
+        std_ctrl = ctrl.std(axis=0)
+        std_expr = expr.std(axis=0)
 
         # 実験群のMADが対象群のMADの2倍以上の場合、True, それ以外はFalse
-        diff = mad_expr - mad_ctrl * self.threshold
+        diff = std_expr - std_ctrl * self.threshold
         reject = diff > 0
 
         return (diff, reject)

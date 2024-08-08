@@ -10,7 +10,8 @@ from factory.correction import CorrectionFactory
 from factory.fluctuation import FluctuationFactory
 from factory.get_file import GetFileFactory
 from usecase.output_fluctuated_features import OutputFluctuatedFeatures
-from usecase.output_fluctuation import OutputFluctuation
+from usecase.output_fluctuation_diff import OutputFluctuationDiff
+from usecase.output_fluctuation_pval import OutputFluctuationPval
 
 # Default parameters for correction_input
 featuredata_input = {"id": None}
@@ -23,65 +24,10 @@ def callback(id: str, multipletest: bool = True, method: str = "fdr_bh"):
     if multipletest:
         correction_input["method"] = method
     print(f"id: {id}")
-    print(f"multipletest: {multipletest}, method: {method}")
+    print(f"multipletest: {multipletest}, method: {method} are applyed if needed.")
 
 
 app = typer.Typer(callback=callback)
-
-
-@app.command()
-def madftest(
-    control: str = "control",
-    experiment: str = "experiment",
-    alpha: float = 0.05,
-):
-    print(f"control: {control}, experiment: {experiment}, alpha: {alpha}")
-    pvals_corrected = None
-
-    try:
-        factory = GetFileFactory()
-        injector = Injector(factory.configure)
-        get_file_handler = injector.get(IGetFile)
-
-        method = "mad-ftest"
-        factory = FluctuationFactory(
-            control,
-            experiment,
-            method,
-            alpha=alpha,
-        )
-        injector = Injector(factory.configure)
-        fluctuation_handler = injector.get(IFluctuation)
-
-        factory = CorrectionFactory(
-            correction_input["method"], alpha, correction_input["multipletest"]
-        )
-        injector = Injector(factory.configure)
-        multiple_correction_handler = injector.get(IMultipleCorrection)
-
-        feature_data = get_file_handler.run(featuredata_input["id"])
-        pvals, reject = fluctuation_handler.run(feature_data)
-
-        if correction_input["multipletest"]:
-            pvals_corrected, reject = multiple_correction_handler.run(pvals)
-
-    except Exception as e:
-        print(e)
-        return
-
-    # Output
-    output = OutputFluctuation(_id=featuredata_input["id"], method=method)
-    result = output.run(
-        features=feature_data.features,
-        pvals=pvals,
-        reject=reject,
-        pvals_corrected=pvals_corrected,
-    )
-    print(result)
-    print(f"rejected: {sum(result.loc[:, 'reject'].to_list())}")
-
-    output = OutputFluctuatedFeatures(_id=featuredata_input["id"])
-    _ = output.run(feature_data, reject)
 
 
 @app.command()
@@ -91,6 +37,7 @@ def levene(
     alpha: float = 0.05,
 ):
     pvals_corrected = None
+    print("method: levene")
     print(f"control: {control}, experiment: {experiment}, alpha: {alpha}")
 
     try:
@@ -100,9 +47,9 @@ def levene(
 
         method = "levene"
         factory = FluctuationFactory(
-            control,
-            experiment,
-            method,
+            control=control,
+            experiment=experiment,
+            method=method,
             alpha=alpha,
         )
         injector = Injector(factory.configure)
@@ -125,7 +72,7 @@ def levene(
         return
 
     # Output
-    output = OutputFluctuation(_id=featuredata_input["id"], method=method)
+    output = OutputFluctuationPval(_id=featuredata_input["id"], method=method)
     result = output.run(
         features=feature_data.features,
         pvals=pvals,
@@ -140,46 +87,47 @@ def levene(
 
 
 @app.command()
-def madratio(
+def var_ratio(
     control: str = "control",
     experiment: str = "experiment",
-    mad_threshold: float = 2.0,
+    threshold: float = 2.0,
+    robust: bool = False,
 ):
-    print(
-        f"control: {control}, experiment: {experiment}, MAD threshold: {mad_threshold}"
-    )
-
-    pvals_corrected = None
+    print(f"method: var-ratio, robust: {robust}")
+    print(f"control: {control}, experiment: {experiment}, threshold: {threshold}")
 
     try:
         factory = GetFileFactory()
         injector = Injector(factory.configure)
         get_file_handler = injector.get(IGetFile)
 
-        method = "mad-ratio"
+        if robust:
+            method = "mad-ratio"
+        else:
+            method = "std-ratio"
+
         factory = FluctuationFactory(
-            control,
-            experiment,
-            method,
-            mad_threshold=mad_threshold,
+            control=control,
+            experiment=experiment,
+            method=method,
+            threshold=threshold,
         )
         injector = Injector(factory.configure)
         fluctuation_handler = injector.get(IFluctuation)
 
         feature_data = get_file_handler.run(featuredata_input["id"])
-        pvals, reject = fluctuation_handler.run(feature_data)
+        ratios, reject = fluctuation_handler.run(feature_data)
 
     except Exception as e:
         print(e)
         return
 
     # Output
-    output = OutputFluctuation(_id=featuredata_input["id"], method=method)
+    output = OutputFluctuationDiff(_id=featuredata_input["id"], method=method)
     result = output.run(
         features=feature_data.features,
-        pvals=pvals,
+        evals=ratios,
         reject=reject,
-        pvals_corrected=pvals_corrected,
     )
     print(result)
     print(f"rejected: {sum(result.loc[:, 'reject'].to_list())}")
@@ -193,7 +141,9 @@ def ftest(
     control: str = "control",
     experiment: str = "experiment",
     alpha: float = 0.05,
+    robust: bool = False,
 ):
+    print(f"method: ftest, robust: {robust}")
     print(f"control: {control}, experiment: {experiment}, alpha: {alpha}")
 
     pvals_corrected = None
@@ -203,11 +153,15 @@ def ftest(
         injector = Injector(factory.configure)
         get_file_handler = injector.get(IGetFile)
 
-        method = "ftest"
+        if robust:
+            method = "mad-ftest"
+        else:
+            method = "ftest"
+
         factory = FluctuationFactory(
-            control,
-            experiment,
-            method,
+            control=control,
+            experiment=experiment,
+            method=method,
             alpha=alpha,
         )
         injector = Injector(factory.configure)
@@ -230,12 +184,59 @@ def ftest(
         return
 
     # Output
-    output = OutputFluctuation(_id=featuredata_input["id"])
+    output = OutputFluctuationPval(_id=featuredata_input["id"])
     result = output.run(
         features=feature_data.features,
         pvals=pvals,
         reject=reject,
         pvals_corrected=pvals_corrected,
+    )
+    print(result)
+    print(f"rejected: {sum(result.loc[:, 'reject'].to_list())}")
+
+    output = OutputFluctuatedFeatures(_id=featuredata_input["id"])
+    _ = output.run(feature_data, reject)
+
+
+@app.command()
+def inner_var(
+    experiment: str = "experiment",
+    threshold: float = 2.0,
+    robust: bool = False,
+):
+    print("method: inner-var")
+    print(f"control: No, experiment: {experiment}, Threshold: {threshold}")
+
+    try:
+        factory = GetFileFactory()
+        injector = Injector(factory.configure)
+        get_file_handler = injector.get(IGetFile)
+
+        if robust:
+            method = "mad-inner-var"
+        else:
+            method = "std-inner-var"
+        factory = FluctuationFactory(
+            experiment=experiment,
+            method=method,
+            threshold=threshold,
+        )
+        injector = Injector(factory.configure)
+        fluctuation_handler = injector.get(IFluctuation)
+
+        feature_data = get_file_handler.run(featuredata_input["id"])
+        ratios, reject = fluctuation_handler.run(feature_data)
+
+    except Exception as e:
+        print(e)
+        return
+
+    # Output
+    output = OutputFluctuationDiff(_id=featuredata_input["id"], method=method)
+    result = output.run(
+        features=feature_data.features,
+        evals=ratios,
+        reject=reject,
     )
     print(result)
     print(f"rejected: {sum(result.loc[:, 'reject'].to_list())}")

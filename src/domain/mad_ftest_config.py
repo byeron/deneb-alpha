@@ -4,7 +4,7 @@ from domain.interface.fluctuation_config import IFluctuationConfig
 
 
 @dataclass(frozen=True)
-class MADFtestConfig(IFluctuationConfig):
+class MadFtestConfig(IFluctuationConfig):
     control: str
     experiment: str
     alpha: float

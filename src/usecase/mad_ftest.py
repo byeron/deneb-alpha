@@ -6,7 +6,7 @@ from domain.interface.fluctuation_config import IFluctuationConfig
 from usecase.fluctuation import Fluctuation
 
 
-class MADFtest(Fluctuation):
+class MadFtest(Fluctuation):
     def __init__(self, config: IFluctuationConfig):
         super().__init__(config)
 
