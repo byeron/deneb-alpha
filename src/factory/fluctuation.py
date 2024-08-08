@@ -12,29 +12,29 @@ from usecase.mad_ratio import MADRatio
 
 
 class FluctuationFactory(Module):
-    def __init__(self, method, control, experiment=None, alpha=None, mad_threshold=None):
+    def __init__(self, method, experiment, control=None, alpha=None, threshold=None):
         self.method = method
         match method:
             case "ftest":
                 if alpha is None:
-                    raise ValueError("alpha is required for ftest method")
+                    raise ValueError("alpha is required")
                 self.config = FtestConfig(
                     control=control,
                     experiment=experiment,
                     alpha=alpha,
                 )
             case "mad-ratio":
-                if mad_threshold is None:
-                    raise ValueError("mad_threshold is required for mad method")
+                if threshold is None:
+                    raise ValueError("mad_threshold is required")
                 self.config = MadRatioConfig(
                     control=control,
                     experiment=experiment,
-                    threshold=mad_threshold,
+                    threshold=threshold,
                 )
                 print(self.config)
             case "mad-ftest":
                 if alpha is None:
-                    raise ValueError("alpha is required for ftest method")
+                    raise ValueError("alpha is required")
                 self.config = MADFtestConfig(
                     control=control,
                     experiment=experiment,
