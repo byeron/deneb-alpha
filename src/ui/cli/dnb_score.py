@@ -22,6 +22,7 @@ clustering_input = {
 def callback(
     id: str,
     alpha: float = 0.05,
+    threshold: float = 2.0,
     fluctuation_method: str = "ftest",
     multiple_correction: bool = True,
     multipletest_method: str = "fdr_bh",
@@ -34,6 +35,7 @@ def callback(
 ):
     featuredata_input["id"] = id
     fluctuation_input["alpha"] = alpha
+    fluctuation_input["threshold"] = threshold
     fluctuation_input["method"] = fluctuation_method
     correction_input["multiple_correction"] = multiple_correction
     if multiple_correction:
@@ -52,16 +54,17 @@ app = typer.Typer(callback=callback)
 
 
 @app.command()
-def score(control: str = "control", experiment: str = "experiment"):
+def score(experiment: str = "experiment", control: str = None):
     # handler生成
     factory = GetFileFactory()
     injector = Injector(factory.configure)
     get_file_handler = injector.get(IGetFile)
 
     factory = DNBScoreFactory(
-        control=control,
         experiment=experiment,
-        alpha=fluctuation_input["alpha"],
+        fluctuation_method=fluctuation_input["method"],
+        fluctuation_threshold=fluctuation_input["threshold"],
+        fluctuation_alpha=fluctuation_input["alpha"],
         is_apply_multiple_correction=correction_input["multiple_correction"],
         multiple_correction_method=correction_input["method"],
         corr_method=dissimilarity_input["method"],
@@ -70,6 +73,7 @@ def score(control: str = "control", experiment: str = "experiment"):
         rank=clustering_input["rank"],
         linkage_method=clustering_input["linkage_method"],
         criterion=clustering_input["criterion"],
+        control=control,
     )
     injector = Injector(factory.configure)
     dnb_score_handler = injector.get(IDNBScore)
