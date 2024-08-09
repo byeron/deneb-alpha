@@ -24,7 +24,7 @@ def callback(id: str, multipletest: bool = True, method: str = "fdr_bh"):
     if multipletest:
         correction_input["method"] = method
     print(f"id: {id}")
-    print(f"multipletest: {multipletest}, method: {method} are applyed if needed.")
+    # print(f"multipletest: {multipletest}, method: {method} are applyed if needed.")
 
 
 app = typer.Typer(callback=callback)
