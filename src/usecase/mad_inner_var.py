@@ -36,3 +36,6 @@ class MadInnerVar(Fluctuation):
         reject = diff > 0
 
         return (diff, reject)
+
+    def can_correction(self):
+        return False

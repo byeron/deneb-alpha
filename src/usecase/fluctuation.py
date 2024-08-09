@@ -7,4 +7,7 @@ class Fluctuation(IFluctuation):
         self.config = config
 
     def run(self):
-        pass
+        raise NotImplementedError
+
+    def can_correction(self) -> bool:
+        raise NotImplementedError

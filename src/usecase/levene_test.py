@@ -51,3 +51,6 @@ class LeveneTest(Fluctuation):
                 rejects.append(p < self.alpha)
 
         return (p_values, rejects)
+
+    def can_correction(self):
+        return True

@@ -48,3 +48,6 @@ class MadFtest(Fluctuation):
         reject = [p_value < self.alpha for p_value in p_value]
 
         return (p_value, reject)
+
+    def can_correction(self):
+        return True

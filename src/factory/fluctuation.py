@@ -63,6 +63,9 @@ class FluctuationFactory(Module):
                     alpha=alpha,
                 )
             case "std-inner-var":
+                if control is not None:
+                    raise ValueError("control is not required")
+
                 if threshold is None:
                     raise ValueError("threshold is required")
                 self.config = StdInnerVarConfig(
@@ -70,6 +73,9 @@ class FluctuationFactory(Module):
                     threshold=threshold,
                 )
             case "mad-inner-var":
+                if control is not None:
+                    raise ValueError("control is not required")
+
                 if threshold is None:
                     raise ValueError("threshold is required")
                 self.config = MadInnerVarConfig(

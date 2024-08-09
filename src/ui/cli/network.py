@@ -16,7 +16,7 @@ from usecase.output_correlation import OutputCorrelation
 from usecase.output_heatmap import OutputHeatmap
 
 featuredata_input = {"id": None}
-fluctuation_input = {"alpha": 0.05, "method": "ftest"}
+fluctuation_input = {"alpha": 0.05, "method": "ftest", "threshold": 2.0}
 correction_input = {"multiple_correction": True, "method": "fdr_bh"}
 
 
@@ -24,20 +24,21 @@ def callback(
     id: str,
     alpha: float = 0.05,
     fluctuation_method: str = "ftest",
+    fluctuation_threshold: float = 2.0,
     multiple_correction: bool = True,
     multipletest_method: str = "fdr_bh",
 ):
     featuredata_input["id"] = id
     fluctuation_input["alpha"] = alpha
+    fluctuation_input["threshold"] = fluctuation_threshold
     fluctuation_input["method"] = fluctuation_method
     correction_input["multiple_correction"] = multiple_correction
     if multiple_correction:
         correction_input["method"] = multipletest_method
     print(f"id: {id}")
-    print(f"multipletest: {multiple_correction}, method: {multipletest_method}")
 
 
-def factory_handlers(control, experiment, fluctuation_input, correction_input):
+def factory_handlers(experiment, fluctuation_input, correction_input, control=None):
     factory = GetFileFactory()
     injector = Injector(factory.configure)
     get_file_handler = injector.get(IGetFile)
@@ -47,6 +48,7 @@ def factory_handlers(control, experiment, fluctuation_input, correction_input):
         experiment=experiment,
         method=fluctuation_input["method"],
         alpha=fluctuation_input["alpha"],
+        threshold=fluctuation_input["threshold"],
     )
     injector = Injector(factory.configure)
     fluctuation_handler = injector.get(IFluctuation)
@@ -67,27 +69,36 @@ app = typer.Typer(callback=callback)
 
 @app.command()
 def correlation(
-    control: str = "control",
     experiment: str = "experiment",
     corr_method: str = "pearson",
     dissimilarity: str = "abslinear",
+    control: str = None,
 ):
     # handler生成
     get_file_handler, fluctuation_handler, correction_handler = factory_handlers(
-        control,
         experiment,
         fluctuation_input,
         correction_input,
+        control=control,
     )
     factory = DissimilarityFactory(experiment, corr_method, dissimilarity)
     injector = Injector(factory.configure)
     dissimilarity_handler = injector.get(IDissimilarity)
 
     # 等分散検定
+    print(f"fluctuation method: {fluctuation_input['method']}")
     feature_data = get_file_handler.run(featuredata_input["id"])
     pvals, reject = fluctuation_handler.run(feature_data)
-    if correction_input["multiple_correction"]:
-        pvals_corrected, reject = correction_handler.run(pvals)
+
+    if fluctuation_handler.can_correction():
+        print(f"alpha: {fluctuation_input['alpha']}")
+    else:
+        print(f"threshold: {fluctuation_input['threshold']}")
+        print("multipletest method: No")
+
+    if correction_input["multiple_correction"] and fluctuation_handler.can_correction():
+        print(f"multipletest method: {correction_input['method']}")
+        _, reject = correction_handler.run(pvals)
 
     # 非類似度計算
     feature_data.fluctuation = reject
@@ -104,7 +115,6 @@ def correlation(
 
 @app.command()
 def clustering(
-    control: str = "control",
     experiment: str = "experiment",
     corr_method: str = "pearson",
     dissimilarity: str = "abslinear",
@@ -112,6 +122,7 @@ def clustering(
     rank: int = 1,
     linkage_method: str = "average",
     criterion: str = "distance",
+    control: str = None,
 ):
     # handler 生成
     factory = ClusteringFactory(cutoff, rank, linkage_method, criterion)
