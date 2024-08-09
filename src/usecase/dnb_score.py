@@ -25,10 +25,10 @@ class DNBScore(IDNBScore):
         self.clustering = clustering
 
     def run(self, feature_data: IFeatureData):
-        pvals, rejects = self.fluctuation.run(feature_data)
+        evals, rejects = self.fluctuation.run(feature_data)
 
-        if self.correction.is_apply():
-            pvals_corrected, rejects = self.correction.run(pvals)
+        if self.correction.is_apply() and self.fluctuation.can_correction():
+            _, rejects = self.correction.run(evals)
         feature_data.fluctuation = rejects
 
         d = self.dissimilarity.run(feature_data)

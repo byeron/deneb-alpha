@@ -1,84 +1,75 @@
-from injector import Module
+from injector import Module, Injector
 
-from domain.abslinear_config import AbsLinearConfig
-from domain.clustering_config import ClusteringConfig
-from domain.ftest_config import FtestConfig
 from domain.interface.clustering import IClustering
 from domain.interface.dissimilarity import IDissimilarity
 from domain.interface.dnb_score import IDNBScore
 from domain.interface.fluctuation import IFluctuation
 from domain.interface.multiple_correction import IMultipleCorrection
-from domain.multipletest_config import MultipletestConfig
-from usecase.abslinear import AbsLinear
-from usecase.clustering import Clustering
 from usecase.dnb_score import DNBScore
-from usecase.ftest import Ftest
-from usecase.multipletest import Multipletest
+from factory.fluctuation import FluctuationFactory
+from factory.correction import CorrectionFactory
+from factory.dissimilarity import DissimilarityFactory
+from factory.clustering import ClusteringFactory
 
 
 class DNBScoreFactory(Module):
     def __init__(
         self,
-        control,
-        experiment,
-        alpha,
-        is_apply_multiple_correction,
-        multiple_correction_method,
-        corr_method,
-        dissimilarity_metric,
-        cutoff,
-        rank,
-        linkage_method,
-        criterion,
+        experiment: str = None,
+        fluctuation_method: str = None,
+        fluctuation_threshold: float = None,
+        fluctuation_alpha: float = None,
+        is_apply_multiple_correction: bool = None,
+        multiple_correction_method: str = None,
+        corr_method: str = None,
+        dissimilarity_metric: str = None,
+        cutoff: float = None,
+        rank: int = None,
+        linkage_method: str = None,
+        criterion: str = None,
+        control: str = None,
     ):
-        self.alpha = alpha
-        self.control = control
-        self.experiment = experiment
-        self.is_apply_multiple_correction = is_apply_multiple_correction
-        self.multiple_correction_method = multiple_correction_method
-        self.corr_method = corr_method
-        self.dissimilarity_metric = dissimilarity_metric
-        self.cutoff = cutoff
-        self.rank = rank
-        self.linkage_method = linkage_method
-        self.criterion = criterion
-
-    def fluctuation_factory(self):
-        config = FtestConfig(
-            control=self.control,
-            experiment=self.experiment,
-            alpha=self.alpha,
+        factory = FluctuationFactory(
+            control=control,
+            experiment=experiment,
+            method=fluctuation_method,
+            threshold=fluctuation_threshold,
+            alpha=fluctuation_alpha,
         )
-        return Ftest(config)
+        injector = Injector(factory.configure)
+        self.fluctuation_handler = injector.get(IFluctuation)
 
-    def correction_factory(self):
-        config = MultipletestConfig(
-            self.multiple_correction_method,
-            self.alpha,
-            self.is_apply_multiple_correction,
+        factory = CorrectionFactory(
+            method=multiple_correction_method,
+            alpha=fluctuation_alpha,
+            apply=is_apply_multiple_correction,
         )
-        return Multipletest(config)
+        injector = Injector(factory.configure)
+        self.correction_handler = injector.get(IMultipleCorrection)
 
-    def dissimilarity_factory(self):
-        match self.dissimilarity_metric:
-            case "abslinear":
-                config = AbsLinearConfig(
-                    self.experiment, self.corr_method, self.dissimilarity_metric
-                )
-                return AbsLinear(config)
-
-    def clustering_factory(self):
-        config = ClusteringConfig(
-            self.cutoff,
-            self.rank,
-            self.linkage_method,
-            self.criterion,
+        factory = DissimilarityFactory(
+            experiment=experiment,
+            corr_method=corr_method,
+            dissimilarity=dissimilarity_metric,
         )
-        return Clustering(config)
+        injector = Injector(factory.configure)
+        self.dissimilarity_handler = injector.get(IDissimilarity)
+
+        factory = ClusteringFactory(
+            cutoff=cutoff,
+            rank=rank,
+            linkage_method=linkage_method,
+            criterion=criterion,
+        )
+        injector = Injector(factory.configure)
+        self.clustering_handler = injector.get(IClustering)
 
     def configure(self, binder):
-        binder.bind(IClustering, to=self.clustering_factory())
-        binder.bind(IDissimilarity, to=self.dissimilarity_factory())
-        binder.bind(IMultipleCorrection, to=self.correction_factory())
-        binder.bind(IFluctuation, to=self.fluctuation_factory())
-        binder.bind(IDNBScore, to=DNBScore)
+        binder.bind(
+            IDNBScore, to=DNBScore(
+                self.fluctuation_handler,
+                self.correction_handler,
+                self.dissimilarity_handler,
+                self.clustering_handler,
+            )
+        )

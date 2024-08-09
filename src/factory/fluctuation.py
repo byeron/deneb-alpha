@@ -83,7 +83,7 @@ class FluctuationFactory(Module):
                     threshold=threshold,
                 )
             case _:
-                raise ValueError("method is not supported")
+                raise ValueError(f"method: {method}  is not supported")
 
     def factory(self):
         match self.method:
