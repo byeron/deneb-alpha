@@ -54,6 +54,7 @@ File ID: c1b64a70
 ```
 
 (ファイル登録後はファイル一覧から、ファイルのIDを取得できます)
+
 `poetry run python src/serve.py file get`
 
 出力
