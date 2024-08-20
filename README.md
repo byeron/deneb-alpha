@@ -5,7 +5,7 @@
 - Python 3.10
 - poetry
 
-# 想定しているファイル形式
+## 想定しているファイル形式
 以下の情報が格納されているcsvファイル
 
 行方向: サンプル(1列目はサンプルIDやラベルなどの情報)
@@ -44,7 +44,7 @@ poetry run python src/serve.py --help
     - 樹形図、相関ヒートマップ、DNBスコアの可視化
 
 # 一般的な操作処理フロー
-1. 解析対象のcsvファイルを登録する
+## 1. 解析対象のcsvファイルを登録する
 
 `poetry run python src/serve.py file add testdata/test_table.csv`
 
@@ -55,6 +55,7 @@ File ID: c1b64a70
 
 (ファイル登録後はファイル一覧から、ファイルのIDを取得できます)
 `poetry run python src/serve.py file get`
+
 出力
 ```bash
 ID: c1b64a70
@@ -64,7 +65,7 @@ ID: c1b64a70
 FILE_ID=c1b64a70
 ```
 
-2. 2段階法における1段階目の揺らぐ変数の抽出を行う
+## 2. 2段階法における1段階目の揺らぐ変数の抽出を行う
 
 `poetry run python src/serve.py fluctuation $FILE_ID ftest --control hoge --experiment fuga`
 
@@ -99,13 +100,13 @@ control: control, experiment: experiment, alpha: 0.05
 
 `poetry run python src/serve.py fluctuation --multipletest --method fdr_bh $FILE_ID ttest --control hoge --experiment fuga --alpha 0.05 --no-robust`
 
-3. 2段階法における2段階目のネットワーク構築を行う
+## 3. 2段階法における2段階目のネットワーク構築を行う
 
-## 距離行列の計算
+### 距離行列の計算
 
 `poetry run python src/serve.py network $FILE_ID correlation --control hoge --experiment fuga`
 
-### サブコマンドのOptions(最新の情報は--helpで確認してください)
+#### サブコマンドのOptions(最新の情報は--helpで確認してください)
 * --control: コントロール群のラベル(default: control)
 * --experiment: 実験群のラベル(default: experiment)
 * --corr-method: 相関係数の計算方法(default: pearson)
@@ -129,11 +130,11 @@ multipletest method: fdr_bh
 
 `poetry run python src/serve.py network --alpha 0.05 --fluctuation-method ftest --fluctuation-threshold 2.0 --no-multiple-correction --multipletest-method fdr_bh $FILE_ID correlation --control hoge --experiment fuga --corr-method pearson --dissimilarity abslinear`
 
-## 階層型クラスタリングの実行
+### 階層型クラスタリングの実行
 
 `poetry run python src/serve.py network $FILE_ID clustering --control hoge --experiment fuga`
 
-### サブコマンドのOptions(最新の情報は--helpで確認してください)
+#### サブコマンドのOptions(最新の情報は--helpで確認してください)
 * --control: コントロール群のラベル(default: control)
 * --experiment: 実験群のラベル(default: experiment)
 * --corr-method: 相関係数の計算方法(default: pearson)
@@ -153,13 +154,13 @@ multipletest method: fdr_bh
 poetry run python src/serve.py network --alpha 0.05 --fluctuation-method ftest --fluctuation-threshold 2.0 --no-multiple-correction --multipletest-method fdr_bh $FILE_ID clustering --control hoge --experiment fuga --corr-method pearson --dissimilarity abslinear --cutoff 0.5 --rank 1 --linkage-method average --criterion distance
 ```
 
-4. DNBスコアの計算を行う
+## 4. DNBスコアの計算を行う
 
 `poetry run python src/serve.py dnb $FILE_ID score --control hoge --experiment fuga`
 
 ### サブコマンドのOptions(最新の情報は--helpで確認してください)
-# --control: コントロール群のラベル(default: control)
-# --experiment: 実験群のラベル(default: experiment)
+* --control: コントロール群のラベル(default: control)
+* --experiment: 実験群のラベル(default: experiment)
 
 出力
 ```bash
@@ -177,27 +178,27 @@ corr_strength  0.160178   0.704919  0.147305
 poetry run python src/serve.py dnb --alpha 0.05 --threshold 2.0 --fluctuation-method ftest --fluctuation-threshold 2.0 --no-multiple-correction --multipletest-method fdr_bh --dissimilarity-method pearson --dissimilarity-metric abslinear --clustering-cutoff 0.5 --clustering-rank 1 --clustering-linkage-mathod average --clustering criterion distance $FILE_ID score --control hoge --experiment fuga
 ```
 
-5. 樹形図、相関ヒートマップ、DNBスコアの可視化を行う
+## 5. 樹形図、相関ヒートマップ、DNBスコアの可視化を行う
 ※2, 3, 4ステップの計算結果をもとに可視化を行うため、エラーが発生する場合はまずそれらのステップを再度実行してください。
 
-## デンドログラム
+### デンドログラム
 
 `poetry run python src/serve.py visualize $FILE_ID dendrogram`
 
-### サブコマンドのOptions(最新の情報は--helpで確認してください)
-# --cutoff: クラスタリングのカットオフ(default: 0.5)
-# --method: クラスタリングの手法(default: average)
+#### サブコマンドのOptions(最新の情報は--helpで確認してください)
+* --cutoff: クラスタリングのカットオフ(default: 0.5)
+* --method: クラスタリングの手法(default: average)
 
-## 相関ヒートマップを出力
+### 相関ヒートマップを出力
 
 `poetry run python src/serve.py visualize $FILE_ID heatmap`
 
-## DNBスコアを出力
+### DNBスコアを出力
 
 `poetry run python src/serve.py visualize $FILE_ID score --state label1 --state label2 --state label3`
 
 ### サブコマンドのOptions(最新の情報は--helpで確認してください)
-# --state: データの並び順を任意に設定できる
+* --state: データの並び順を任意に設定できる
 
 # 注意
 - 統一されていないオプション名などは、今後修正される可能性があります。最新の情報はメインコマンド、サブコマンドの--helpで確認してください。
