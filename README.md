@@ -7,9 +7,13 @@
 
 # 想定しているファイル形式
 以下の情報が格納されているcsvファイル
+
 行方向: サンプル(1列目はサンプルIDやラベルなどの情報)
+
 列方向: 特徴量(0行目は変数名が示されたヘッダー行)
+
 pandas.read_csv(index_col=0, header=0)によって、DataFrame.indexにサンプルID、DataFrame.columnsに変数名が格納されることを想定しています。
+
 `testdata`ディレクトリにサンプルデータを格納していますので、参考にしてください。
 
 # セットアップ(docker)
@@ -41,6 +45,7 @@ poetry run python src/serve.py --help
 
 # 一般的な操作処理フロー
 1. 解析対象のcsvファイルを登録する
+
 `poetry run python src/serve.py file add testdata/test_table.csv`
 
 出力
@@ -60,6 +65,7 @@ FILE_ID=c1b64a70
 ```
 
 2. 2段階法における1段階目の揺らぐ変数の抽出を行う
+
 `poetry run python src/serve.py fluctuation $FILE_ID ftest --control hoge --experiment fuga`
 
 ### サブコマンドのOptions(最新の情報は--helpで確認してください)
@@ -90,11 +96,13 @@ control: control, experiment: experiment, alpha: 0.05
 ```
 
 デフォルトオプションを省略しない場合は
+
 `poetry run python src/serve.py fluctuation --multipletest --method fdr_bh $FILE_ID ttest --control hoge --experiment fuga --alpha 0.05 --no-robust`
 
 3. 2段階法における2段階目のネットワーク構築を行う
 
 ## 距離行列の計算
+
 `poetry run python src/serve.py network $FILE_ID correlation --control hoge --experiment fuga`
 
 ### サブコマンドのOptions(最新の情報は--helpで確認してください)
@@ -118,9 +126,11 @@ multipletest method: fdr_bh
 ```
 
 デフォルトオプションを省略しない場合は
-`# poetry run python src/serve.py network --alpha 0.05 --fluctuation-method ftest --fluctuation-threshold 2.0 --no-multiple-correction --multipletest-method fdr_bh $FILE_ID correlation --control hoge --experiment fuga --corr-method pearson --dissimilarity abslinear`
+
+`poetry run python src/serve.py network --alpha 0.05 --fluctuation-method ftest --fluctuation-threshold 2.0 --no-multiple-correction --multipletest-method fdr_bh $FILE_ID correlation --control hoge --experiment fuga --corr-method pearson --dissimilarity abslinear`
 
 ## 階層型クラスタリングの実行
+
 `poetry run python src/serve.py network $FILE_ID clustering --control hoge --experiment fuga`
 
 ### サブコマンドのOptions(最新の情報は--helpで確認してください)
@@ -144,6 +154,7 @@ poetry run python src/serve.py network --alpha 0.05 --fluctuation-method ftest -
 ```
 
 4. DNBスコアの計算を行う
+
 `poetry run python src/serve.py dnb $FILE_ID score --control hoge --experiment fuga`
 
 ### サブコマンドのOptions(最新の情報は--helpで確認してください)
@@ -170,6 +181,7 @@ poetry run python src/serve.py dnb --alpha 0.05 --threshold 2.0 --fluctuation-me
 ※2, 3, 4ステップの計算結果をもとに可視化を行うため、エラーが発生する場合はまずそれらのステップを再度実行してください。
 
 ## デンドログラム
+
 `poetry run python src/serve.py visualize $FILE_ID dendrogram`
 
 ### サブコマンドのOptions(最新の情報は--helpで確認してください)
@@ -177,9 +189,11 @@ poetry run python src/serve.py dnb --alpha 0.05 --threshold 2.0 --fluctuation-me
 # --method: クラスタリングの手法(default: average)
 
 ## 相関ヒートマップを出力
+
 `poetry run python src/serve.py visualize $FILE_ID heatmap`
 
 ## DNBスコアを出力
+
 `poetry run python src/serve.py visualize $FILE_ID score --state label1 --state label2 --state label3`
 
 ### サブコマンドのOptions(最新の情報は--helpで確認してください)
