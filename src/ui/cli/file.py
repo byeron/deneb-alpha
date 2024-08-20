@@ -12,7 +12,7 @@ app = typer.Typer()
 
 
 @app.command()
-def register(path: str) -> None:
+def add(path: str) -> None:
     factory = RegisterFileFactory("./src/config.yml")
     injector = Injector(factory.configure)
     register_file_handler = injector.get(IRegisterFile)
