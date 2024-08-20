@@ -41,35 +41,35 @@ poetry run python src/serve.py --help
 
 # 一般的な操作処理フロー
 1. 解析対象のcsvファイルを登録する
+`poetry run python src/serve.py file add testdata/test_table.csv`
+
+出力
 ```bash
-# ファイルの登録
-PATH_TO_CSV=testdata/test_table.csv
-$ poetry run python src/serve.py file add $PATH_TO_CSV
-
 File ID: c1b64a70
+```
 
-# ファイル登録後はファイル一覧から、ファイルのIDを取得できます
-$ poetry run python src/serve.py file get
-
+(ファイル登録後はファイル一覧から、ファイルのIDを取得できます)
+`poetry run python src/serve.py file get`
+出力
+```bash
 ID: c1b64a70
         Name: test_table
         Created at: 2024-08-20 05:35:44
 
 FILE_ID=c1b64a70
 ```
+
 2. 2段階法における1段階目の揺らぐ変数の抽出を行う
+`poetry run python src/serve.py fluctuation $FILE_ID ftest --control hoge --experiment fuga`
+
+### サブコマンドのOptions(最新の情報は--helpで確認してください)
+* --control: コントロール群のラベル(default: control)
+* --experiment: 実験群のラベル(default: experiment)
+* --alpha: 有意水準(default: 0.05)
+* --robust / --no-robust: ロバストな統計量を用いるかどうか(default: no-robust)
+
+出力
 ```bash
-# CLI上で揺らぐ変数の抽出を行う
-# サブコマンドのOptions(最新の情報は--helpで確認してください)
-# --control: コントロール群のラベル(default: control)
-# --experiment: 実験群のラベル(default: experiment)
-# --alpha: 有意水準(default: 0.05)
-# --robust / --no-robust: ロバストな統計量を用いるかどうか(default: no-robust)
-
-# 基本的には以下のコマンドを実行する
-# 対象群と実験群を指定する
-$ poetry run python src/serve.py fluctuation $FILE_ID ftest --control hoge --experiment fuga
-
 id: c1b64a70
 method: ftest, robust: False
 control: control, experiment: experiment, alpha: 0.05
@@ -87,22 +87,24 @@ control: control, experiment: experiment, alpha: 0.05
 10       10  2.817644e-10        1.056617e-09    True
 11       11  3.746532e-10        1.248844e-09    True
 ...
-
-# デフォルトオプションを省略しない場合は
-# poetry run python src/serve.py fluctuation --multipletest --method fdr_bh $FILE_ID ttest --control hoge --experiment fuga --alpha 0.05 --no-robust
 ```
+
+デフォルトオプションを省略しない場合は
+`poetry run python src/serve.py fluctuation --multipletest --method fdr_bh $FILE_ID ttest --control hoge --experiment fuga --alpha 0.05 --no-robust`
+
 3. 2段階法における2段階目のネットワーク構築を行う
+
+## 距離行列の計算
+`poetry run python src/serve.py network $FILE_ID correlation --control hoge --experiment fuga`
+
+### サブコマンドのOptions(最新の情報は--helpで確認してください)
+* --control: コントロール群のラベル(default: control)
+* --experiment: 実験群のラベル(default: experiment)
+* --corr-method: 相関係数の計算方法(default: pearson)
+* --dissimilarity: 距離行列の計算方法(default: abslinear, 1 - |correlation|)
+
+出力
 ```bash
-# CLI上で距離行列の計算を行う
-# サブコマンドのOptions(最新の情報は--helpで確認してください)
-# --control: コントロール群のラベル(default: control)
-# --experiment: 実験群のラベル(default: experiment)
-# --corr-method: 相関係数の計算方法(default: pearson)
-# --dissimilarity: 距離行列の計算方法(default: abslinear, 1 - |correlation|)
-
-# 対象群と実験群を指定する
-poetry run python src/serve.py network $FILE_ID correlation --control hoge --experiment fuga
-
 id: c1b64a70
 fluctuation method: ftest
 alpha: 0.05
@@ -113,42 +115,43 @@ multipletest method: fdr_bh
 2   0.434678  0.251945  0.000000  0.318165  0.299083  0.344560  0.448543  ...  0.977057  0.975467  0.864782  0.641638  0.735182  0.831317  0.609826
 3   0.280079  0.325435  0.318165  0.000000  0.283194  0.215163  0.398815  ...  0.823960  0.964219  0.911583  0.481593  0.629666  0.957121  0.584318
 4   0.260438  0.278216  0.299083  0.283194  0.000000  0.200466  0.177195  ...  0.928089  0.990752  0.999827  0.678836  0.822985  0.846650  0.661775
-
-# デフォルトオプションを省略しない場合は
-# poetry run python src/serve.py network --alpha 0.05 --fluctuation-method ftest --fluctuation-threshold 2.0 --no-multiple-correction --multipletest-method fdr_bh $FILE_ID correlation --control hoge --experiment fuga --corr-method pearson --dissimilarity abslinear
 ```
+
+デフォルトオプションを省略しない場合は
+`# poetry run python src/serve.py network --alpha 0.05 --fluctuation-method ftest --fluctuation-threshold 2.0 --no-multiple-correction --multipletest-method fdr_bh $FILE_ID correlation --control hoge --experiment fuga --corr-method pearson --dissimilarity abslinear`
+
+## 階層型クラスタリングの実行
+`poetry run python src/serve.py network $FILE_ID clustering --control hoge --experiment fuga`
+
+### サブコマンドのOptions(最新の情報は--helpで確認してください)
+* --control: コントロール群のラベル(default: control)
+* --experiment: 実験群のラベル(default: experiment)
+* --corr-method: 相関係数の計算方法(default: pearson)
+* --dissimilarity: 距離行列の計算方法(default: abslinear, 1 - |correlation|)
+* --cutoff: クラスタリングのカットオフ(default: 0.5)
+* --rank: 大きい方から何番目のクラスタを表示するか(default: 1)
+* --linkage-method: クラスタリングの手法(default: average)
+* --criterion: クラスタリングの基準(default: distance)
+
+出力
 ```bash
-
-# CLI上で距離行列をもとにした階層型クラスタリングを行う
-# サブコマンドのOptions(最新の情報は--helpで確認してください)
-# --control: コントロール群のラベル(default: control)
-# --experiment: 実験群のラベル(default: experiment)
-# --corr-method: 相関係数の計算方法(default: pearson)
-# --dissimilarity: 距離行列の計算方法(default: abslinear, 1 - |correlation|)
-# --cutoff: クラスタリングのカットオフ(default: 0.5)
-# --rank: 大きい方から何番目のクラスタを表示するか(default: 1)
-# --linkage-method: クラスタリングの手法(default: average)
-# --criterion: クラスタリングの基準(default: distance)
-
-# 対象群と実験群を指定する
-$ poetry run python src/serve.py network $FILE_ID clustering --control hoge --experiment fuga
-
 (21, [['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20']])
+```
 
-# デフォルトオプションを省略しない場合は
-# poetry run python src/serve.py network --alpha 0.05 --fluctuation-method ftest --fluctuation-threshold 2.0 --no-multiple-correction --multipletest-method fdr_bh $FILE_ID clustering --control hoge --experiment fuga --corr-method pearson --dissimilarity abslinear --cutoff 0.5 --rank 1 --linkage-method average --criterion distance
+デフォルトオプションを省略しない場合は
+```bash
+poetry run python src/serve.py network --alpha 0.05 --fluctuation-method ftest --fluctuation-threshold 2.0 --no-multiple-correction --multipletest-method fdr_bh $FILE_ID clustering --control hoge --experiment fuga --corr-method pearson --dissimilarity abslinear --cutoff 0.5 --rank 1 --linkage-method average --criterion distance
 ```
 
 4. DNBスコアの計算を行う
-```bash
-# CLI上でDNBスコアの計算を行う
-# サブコマンドのOptions(最新の情報は--helpで確認してください)
+`poetry run python src/serve.py dnb $FILE_ID score --control hoge --experiment fuga`
+
+### サブコマンドのOptions(最新の情報は--helpで確認してください)
 # --control: コントロール群のラベル(default: control)
 # --experiment: 実験群のラベル(default: experiment)
 
-# 対象群と実験群を指定する
-$ poetry run python src/serve.py dnb $FILE_ID score --control hoge --experiment fuga
-
+出力
+```bash
 id: c1b64a70
 multipletest: True, method: fdr_bh
 #1
@@ -156,29 +159,31 @@ multipletest: True, method: fdr_bh
 dnb_score      0.045898   0.694127  0.042062
 std_deviation  0.286546   0.984691  0.285541
 corr_strength  0.160178   0.704919  0.147305
+```
 
-# デフォルトオプションを省略しない場合は
-# poetry run python src/serve.py dnb --alpha 0.05 --threshold 2.0 --fluctuation-method ftest --fluctuation-threshold 2.0 --no-multiple-correction --multipletest-method fdr_bh --dissimilarity-method pearson --dissimilarity-metric abslinear --clustering-cutoff 0.5 --clustering-rank 1 --clustering-linkage-mathod average --clustering criterion distance $FILE_ID score --control hoge --experiment fuga
+デフォルトオプションを省略しない場合は
+```bash
+poetry run python src/serve.py dnb --alpha 0.05 --threshold 2.0 --fluctuation-method ftest --fluctuation-threshold 2.0 --no-multiple-correction --multipletest-method fdr_bh --dissimilarity-method pearson --dissimilarity-metric abslinear --clustering-cutoff 0.5 --clustering-rank 1 --clustering-linkage-mathod average --clustering criterion distance $FILE_ID score --control hoge --experiment fuga
 ```
 
 5. 樹形図、相関ヒートマップ、DNBスコアの可視化を行う
-2, 3, 4ステップの計算結果をもとに可視化を行うため、エラーが発生する場合はまずそれらのステップを再度実行してください。
-```bash
-# CLI上で可視化を行う
-# サブコマンドのOptions(最新の情報は--helpで確認してください)
+※2, 3, 4ステップの計算結果をもとに可視化を行うため、エラーが発生する場合はまずそれらのステップを再度実行してください。
+
+## デンドログラム
+`poetry run python src/serve.py visualize $FILE_ID dendrogram`
+
+### サブコマンドのOptions(最新の情報は--helpで確認してください)
 # --cutoff: クラスタリングのカットオフ(default: 0.5)
 # --method: クラスタリングの手法(default: average)
 
-# デンドログラムを出力
-poetry run python src/serve.py visualize $FILE_ID dendrogram
+## 相関ヒートマップを出力
+`poetry run python src/serve.py visualize $FILE_ID heatmap`
 
-# 相関ヒートマップを出力
-poetry run python src/serve.py visualize $FILE_ID heatmap
+## DNBスコアを出力
+`poetry run python src/serve.py visualize $FILE_ID score --state label1 --state label2 --state label3`
 
-# DNBスコアを出力
+### サブコマンドのOptions(最新の情報は--helpで確認してください)
 # --state: データの並び順を任意に設定できる
-poetry run python src/serve.py visualize $FILE_ID score --state label1 --state label2 --state label3
-```
 
 # 注意
 - 統一されていないオプション名などは、今後修正される可能性があります。最新の情報はメインコマンド、サブコマンドの--helpで確認してください。
