@@ -99,7 +99,7 @@ control: control, experiment: experiment, alpha: 0.05
 
 デフォルトオプションを省略しない場合は
 
-`poetry run python src/serve.py fluctuation --multipletest --method fdr_bh $FILE_ID ttest --control hoge --experiment fuga --alpha 0.05 --no-robust`
+`poetry run python src/serve.py fluctuation --multipletest --method fdr_bh $FILE_ID ftest --control hoge --experiment fuga --alpha 0.05 --no-robust`
 
 ## 3. 2段階法における2段階目のネットワーク構築を行う
 
