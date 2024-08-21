@@ -44,26 +44,58 @@ poetry run python src/serve.py visualize $FILE_ID score --state label1 --state l
 ```
 
 ## コマンド体系
+最新のオプションは反映されていない可能性があります。最新のオプションは`--help`で確認してください。
+
 ```bash
  deneb-alpha
- ├── dnb
- │   └── score
- ├── file
- │   ├── add
- │   ├── delete
- │   └── get
- ├── fluctuation
- │   ├── ftest
- │   ├── inner-var
- │   ├── levene
- │   └── var-ratio
- ├── network
- │   ├── clustering
- │   └── correlation
- └── visualize
-     ├── dendrogram
-     ├── heatmap
-     └── score
+ ├── dnb*
+ │   └── score**
+ ├── file*
+ │   ├── add**
+ │   ├── delete**
+ │   └── get**
+ ├── fluctuation*
+ │   ├── ftest**
+ │   │   ├── --control               [default: control]    # control group label
+ │   │   ├── --experiment            [default: experiment] # experiment group label
+ │   │   ├── --alpha                 [default: 0.05]       # statistical significance
+ │   │   └── --robust / --no-robust  [default: no-robust]  # whether to use robust statistics
+ │   ├── inner-var**: 対象群なしDNB
+ │   │   ├── --experiment            [default: experiment] # experiment group label
+ │   │   ├── --threshold             [default: 2.0]        # threshold for fold change
+ │   │   └── --robust / --no-robust  [default: no-robust]  # whether to use robust statistics
+ │   ├── levene**
+ │   │   ├── --control               [default: control]    # control group label
+ │   │   ├── --experiment            [default: experiment] # experiment group label
+ │   │   ├── --alpha                 [default: 0.05]       # statistical significance
+ │   │   └── --robust / --no-robust  [default: no-robust]  # whether to use robust statistics
+ │   └── var-ratio**
+ │       ├── --control               [default: control]    # control group label
+ │       ├── --experiment            [default: experiment] # experiment group label
+ │       ├── --threshold             [default: 2.0]        # threshold for fold change
+ │       └── --robust / --no-robust  [default: no-robust]  # whether to use robust statistics
+ ├── network*
+ │   ├── clustering**
+ │   │   ├── --control               [default: None]       # control group label
+ │   │   ├── --experiment            [default: experiment] # experiment group label
+ │   │   ├── --corr-method           [default: pearson]    # correlation method
+ │   │   ├── --dissimilarity         [default: abslinear]  # metric for clustering
+ │   │   ├── --cutoff                [default: 0.5]        # cutoff of dissimilarity
+ │   │   ├── --rank                  [default: 1]          # The Nth largest cluster
+ │   │   ├── --linkage-method        [default: average]    # linkage method
+ │   │   └── --criterion             [default: distance]   # criterion for clustering
+ │   └── correlation**
+ │       ├── --control               [default: None]       # control group label
+ │       ├── --experiment            [default: experiment] # experiment group label
+ │       ├── --corr-method           [default: pearson]    # correlation method
+ │       ├── --dissimilarity         [default: abslinear]  # metric for clustering
+ └── visualize*
+     ├── dendrogram**
+     │   ├── --cutoff                [default: 0.5]        # cutoff of dissimilarity
+     │   └── --method                [default: average]    # linkage method
+     ├── heatmap**
+     └── score**
+         └── --state                 [default: []]         # state labels
 ```
 
 ## 想定しているファイル形式
