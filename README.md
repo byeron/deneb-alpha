@@ -44,26 +44,76 @@ poetry run python src/serve.py visualize $FILE_ID score --state label1 --state l
 ```
 
 ## コマンド体系
+最新のオプションは反映されていない可能性があります。最新のオプションは`--help`で確認してください。
+
 ```bash
  deneb-alpha
- ├── dnb
- │   └── score
- ├── file
- │   ├── add
- │   ├── delete
- │   └── get
- ├── fluctuation
- │   ├── ftest
- │   ├── inner-var
- │   ├── levene
- │   └── var-ratio
- ├── network
- │   ├── clustering
- │   └── correlation
- └── visualize
-     ├── dendrogram
-     ├── heatmap
-     └── score
+ ├── dnb*
+ │   ├── --alpha                    [default: 0.05]       # statistical significance
+ │   ├── --threshold                [default: 2.0]        # threshold for fold change
+ │   ├── --fluctuation-method       [default: ftest]      # method for fluctuation
+ │   ├── --multiple-correction / --no-multipletest-correction   [default: True]        # threshold for fold change
+ │   ├── --multipletest-method      [default: fdr_bh]     # method for multiple testing correction
+ │   ├── --dissimilarity-method     [default: pearson]    # method for dissimilarity
+ │   ├── --dissimilarity-metric     [default: abslinear]  # metric for dissimilarity 
+ │   ├── --clustering-cutoff        [default: 0.5]        # cutoff of dissimilarity
+ │   ├── --clustering-rank          [default: 1]          # The Nth largest cluster
+ │   ├── --clustering-linkage-method [default: average]   # linkage method
+ │   ├── --clustering-criterion     [default: distance]   # criterion for clustering
+ │   └── score**
+ │       └── --state                [default: []]         # state labels
+ ├── file*
+ │   ├── add**
+ │   ├── delete**
+ │   └── get**
+ ├── fluctuation*
+ │   ├── --multipletest / --no-multipletest  [default: True]  # whether to use multiple testing correction
+ │   ├── --method                    [default: fdr_bh]     # method for multiple testing correction
+ │   ├── ftest**
+ │   │   ├── --control               [default: control]    # control group label
+ │   │   ├── --experiment            [default: experiment] # experiment group label
+ │   │   ├── --alpha                 [default: 0.05]       # statistical significance
+ │   │   └── --robust / --no-robust  [default: no-robust]  # whether to use robust statistics
+ │   ├── inner-var**: 対象群なしDNB
+ │   │   ├── --experiment            [default: experiment] # experiment group label
+ │   │   ├── --threshold             [default: 2.0]        # threshold for fold change
+ │   │   └── --robust / --no-robust  [default: no-robust]  # whether to use robust statistics
+ │   ├── levene**
+ │   │   ├── --control               [default: control]    # control group label
+ │   │   ├── --experiment            [default: experiment] # experiment group label
+ │   │   ├── --alpha                 [default: 0.05]       # statistical significance
+ │   │   └── --robust / --no-robust  [default: no-robust]  # whether to use robust statistics
+ │   └── var-ratio**
+ │       ├── --control               [default: control]    # control group label
+ │       ├── --experiment            [default: experiment] # experiment group label
+ │       ├── --threshold             [default: 2.0]        # threshold for fold change
+ │       └── --robust / --no-robust  [default: no-robust]  # whether to use robust statistics
+ ├── network*
+ │   ├── --alpha                     [default: 0.05]       # statistical significance
+ │   ├── --fluctuation-method        [default: ftest]      # method for fluctuation
+ │   ├── --multiple-correction / --no-multiple-correction  [default: True]  # whether to use multiple testing correction
+ │   ├── --multipletest-method       [default: fdr_bh]     # method for multiple testing correction
+ │   ├── clustering**
+ │   │   ├── --control               [default: None]       # control group label
+ │   │   ├── --experiment            [default: experiment] # experiment group label
+ │   │   ├── --corr-method           [default: pearson]    # correlation method
+ │   │   ├── --dissimilarity         [default: abslinear]  # metric for clustering
+ │   │   ├── --cutoff                [default: 0.5]        # cutoff of dissimilarity
+ │   │   ├── --rank                  [default: 1]          # The Nth largest cluster
+ │   │   ├── --linkage-method        [default: average]    # linkage method
+ │   │   └── --criterion             [default: distance]   # criterion for clustering
+ │   └── correlation**
+ │       ├── --control               [default: None]       # control group label
+ │       ├── --experiment            [default: experiment] # experiment group label
+ │       ├── --corr-method           [default: pearson]    # correlation method
+ │       ├── --dissimilarity         [default: abslinear]  # metric for clustering
+ └── visualize*
+     ├── dendrogram**
+     │   ├── --cutoff                [default: 0.5]        # cutoff of dissimilarity
+     │   └── --method                [default: average]    # linkage method
+     ├── heatmap**
+     └── score**
+         └── --state                 [default: []]         # state labels
 ```
 
 ## 想定しているファイル形式
@@ -80,7 +130,7 @@ poetry run python src/serve.py visualize $FILE_ID score --state label1 --state l
 
 pandas.read_csv(index_col=0, header=0)によって、DataFrame.indexにサンプルID、DataFrame.columnsに変数名が格納されます。
 
-具体的な例は`testdata`ディレクトリにサンプルデータを格納しています。
+具体的な例は`testdata`ディレクトリに練習用データとして格納しています。
 
 ## 出力例
 ![dendrogram](./docs/images/dendrogram.png)
