@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-import typer_cloup as typer
+import typer
 
 from usecase.visualize_dendrogram import VDendrogram
 from usecase.visualize_dnb_score import VDNBScore

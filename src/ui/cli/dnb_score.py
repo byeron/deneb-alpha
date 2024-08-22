@@ -1,6 +1,8 @@
-import typer_cloup as typer
+import typer
 from injector import Injector
+from typing_extensions import Annotated
 
+from domain.fluctuation_method import FluctuationMethod
 from domain.interface.dnb_score import IDNBScore
 from domain.interface.get_file import IGetFile
 from factory.dnb_score import DNBScoreFactory
@@ -20,18 +22,18 @@ clustering_input = {
 
 
 def callback(
-    id: str,
-    alpha: float = 0.05,
-    threshold: float = 2.0,
-    fluctuation_method: str = "ftest",
-    multiple_correction: bool = True,
-    multiple_correction_method: str = "fdr_bh",
-    dissimilarity_method: str = "pearson",
-    dissimilarity_metric: str = "abslinear",
-    clustering_cutoff: float = 0.5,
-    clustering_rank: int = 1,
-    clustering_linkege_method: str = "average",
-    clustering_criterion: str = "distance",
+    id: Annotated[str, typer.Argument(...)],
+    alpha: Annotated[float, typer.Option("--alpha", "-a")] = 0.05,
+    threshold: Annotated[float, typer.Option("--threshold", "-t")] = 2.0,
+    fluctuation_method: Annotated[FluctuationMethod, typer.Option("--fluctuation-method", "-f")] = FluctuationMethod.ftest,
+    multiple_correction: Annotated[bool, typer.Option("--multiple-correction", "-mc")] = True,
+    multiple_correction_method: Annotated[str, typer.Option("--multiple-correction-method", "-mm")] = "fdr_bh",
+    dissimilarity_method: Annotated[str, typer.Option("--dissimilarity-method", "-dm")] = "pearson",
+    dissimilarity_metric: Annotated[str, typer.Option("--dissimilarity-metric", "-dmt")] = "abslinear",
+    clustering_cutoff: Annotated[float, typer.Option("--clustering-cutoff", "-cc")] = 0.5,
+    clustering_rank: Annotated[int, typer.Option("--clustering-rank", "-cr")] = 1,
+    clustering_linkege_method: Annotated[str, typer.Option("--clustering-linkage-method", "-clm")] = "average",
+    clustering_criterion: Annotated[str, typer.Option("--clustering-criterion", "-ccr")] = "distance",
 ):
     featuredata_input["id"] = id
     fluctuation_input["alpha"] = alpha
