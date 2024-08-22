@@ -1,5 +1,6 @@
 from injector import Module
 
+from domain.fluctuation_method import FluctuationMethod
 from domain.ftest_config import FtestConfig
 from domain.interface.fluctuation import IFluctuation
 from domain.levene_test_config import LeveneTestConfig
@@ -21,7 +22,7 @@ class FluctuationFactory(Module):
     def __init__(self, method, experiment, control=None, alpha=None, threshold=None):
         self.method = method
         match method:
-            case "ftest":
+            case FluctuationMethod.ftest:
                 if alpha is None:
                     raise ValueError("alpha is required")
                 self.config = FtestConfig(
@@ -29,7 +30,7 @@ class FluctuationFactory(Module):
                     experiment=experiment,
                     alpha=alpha,
                 )
-            case "mad-ftest":
+            case FluctuationMethod.mad_ftest:
                 if alpha is None:
                     raise ValueError("alpha is required")
                 self.config = MadFtestConfig(
@@ -37,7 +38,7 @@ class FluctuationFactory(Module):
                     experiment=experiment,
                     alpha=alpha,
                 )
-            case "std-ratio":
+            case FluctuationMethod.std_ratio:
                 if threshold is None:
                     raise ValueError("threshold is required")
                 self.config = StdRatioConfig(
@@ -45,7 +46,7 @@ class FluctuationFactory(Module):
                     experiment=experiment,
                     threshold=threshold,
                 )
-            case "mad-ratio":
+            case FluctuationMethod.mad_ratio:
                 if threshold is None:
                     raise ValueError("mad_threshold is required")
                 self.config = MadRatioConfig(
@@ -54,7 +55,7 @@ class FluctuationFactory(Module):
                     threshold=threshold,
                 )
                 print(self.config)
-            case "levene":
+            case FluctuationMethod.levene:
                 if alpha is None:
                     raise ValueError("alpha is required")
                 self.config = LeveneTestConfig(
@@ -62,7 +63,7 @@ class FluctuationFactory(Module):
                     experiment=experiment,
                     alpha=alpha,
                 )
-            case "std-inner-var":
+            case FluctuationMethod.std_inner_var:
                 if control is not None:
                     raise ValueError("control is not required")
 
@@ -72,7 +73,7 @@ class FluctuationFactory(Module):
                     experiment=experiment,
                     threshold=threshold,
                 )
-            case "mad-inner-var":
+            case FluctuationMethod.mad_inner_var:
                 if control is not None:
                     raise ValueError("control is not required")
 
@@ -87,19 +88,19 @@ class FluctuationFactory(Module):
 
     def factory(self):
         match self.method:
-            case "ftest":
+            case FluctuationMethod.ftest:
                 return Ftest(self.config)
-            case "mad-ftest":
+            case FluctuationMethod.mad_ftest:
                 return MadFtest(self.config)
-            case "std-ratio":
+            case FluctuationMethod.std_ratio:
                 return StdRatio(self.config)
-            case "mad-ratio":
+            case FluctuationMethod.mad_ratio:
                 return MadRatio(self.config)
-            case "levene":
+            case FluctuationMethod.levene:
                 return LeveneTest(self.config)
-            case "std-inner-var":
+            case FluctuationMethod.std_inner_var:
                 return StdInnerVar(self.config)
-            case "mad-inner-var":
+            case FluctuationMethod.mad_inner_var:
                 return MadInnerVar(self.config)
             case _:
                 raise ValueError("method is not supported in factory")

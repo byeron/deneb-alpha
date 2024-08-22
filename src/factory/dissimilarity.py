@@ -1,5 +1,6 @@
 from injector import Module
 
+from domain.dissimilarity_metric import DissimilarityMetric
 from domain.abslinear_config import AbsLinearConfig
 from domain.interface.dissimilarity import IDissimilarity
 from domain.interface.dissimilarity_config import IDissimilarityConfig
@@ -14,7 +15,7 @@ class DissimilarityFactory(Module):
 
     def configure(self, binder):
         match self.dissimilarity:
-            case "abslinear":
+            case DissimilarityMetric.abslinear:
                 binder.bind(
                     IDissimilarityConfig,
                     to=AbsLinearConfig(
