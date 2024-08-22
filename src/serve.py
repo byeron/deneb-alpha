@@ -1,4 +1,5 @@
 import typer
+
 from ui.cli import dnb_score, file, fluctuation, network, visualize
 
 app = typer.Typer()

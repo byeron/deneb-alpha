@@ -25,15 +25,31 @@ def callback(
     id: Annotated[str, typer.Argument(...)],
     alpha: Annotated[float, typer.Option("--alpha", "-a")] = 0.05,
     threshold: Annotated[float, typer.Option("--threshold", "-t")] = 2.0,
-    fluctuation_method: Annotated[FluctuationMethod, typer.Option("--fluctuation-method", "-f")] = FluctuationMethod.ftest,
-    multiple_correction: Annotated[bool, typer.Option("--multiple-correction", "-mc")] = True,
-    multiple_correction_method: Annotated[str, typer.Option("--multiple-correction-method", "-mm")] = "fdr_bh",
-    dissimilarity_method: Annotated[str, typer.Option("--dissimilarity-method", "-dm")] = "pearson",
-    dissimilarity_metric: Annotated[str, typer.Option("--dissimilarity-metric", "-dmt")] = "abslinear",
-    clustering_cutoff: Annotated[float, typer.Option("--clustering-cutoff", "-cc")] = 0.5,
+    fluctuation_method: Annotated[
+        FluctuationMethod, typer.Option("--fluctuation-method", "-f")
+    ] = FluctuationMethod.ftest,
+    multiple_correction: Annotated[
+        bool, typer.Option("--multiple-correction", "-mc")
+    ] = True,
+    multiple_correction_method: Annotated[
+        str, typer.Option("--multiple-correction-method", "-mm")
+    ] = "fdr_bh",
+    dissimilarity_method: Annotated[
+        str, typer.Option("--dissimilarity-method", "-dm")
+    ] = "pearson",
+    dissimilarity_metric: Annotated[
+        str, typer.Option("--dissimilarity-metric", "-dmt")
+    ] = "abslinear",
+    clustering_cutoff: Annotated[
+        float, typer.Option("--clustering-cutoff", "-cc")
+    ] = 0.5,
     clustering_rank: Annotated[int, typer.Option("--clustering-rank", "-cr")] = 1,
-    clustering_linkege_method: Annotated[str, typer.Option("--clustering-linkage-method", "-clm")] = "average",
-    clustering_criterion: Annotated[str, typer.Option("--clustering-criterion", "-ccr")] = "distance",
+    clustering_linkege_method: Annotated[
+        str, typer.Option("--clustering-linkage-method", "-clm")
+    ] = "average",
+    clustering_criterion: Annotated[
+        str, typer.Option("--clustering-criterion", "-ccr")
+    ] = "distance",
 ):
     featuredata_input["id"] = id
     fluctuation_input["alpha"] = alpha

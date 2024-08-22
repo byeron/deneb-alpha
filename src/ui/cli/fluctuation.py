@@ -1,8 +1,8 @@
 import typer
-from typing_extensions import Annotated
 
 # for injection
 from injector import Injector
+from typing_extensions import Annotated
 
 from domain.interface.fluctuation import IFluctuation
 from domain.interface.get_file import IGetFile
@@ -37,9 +37,15 @@ app = typer.Typer(callback=callback)
 
 @app.command()
 def ftest(
-    ctrl: Annotated[str, typer.Option("--ctrl", "-c",  help="control group")] = "control",
-    expr: Annotated[str, typer.Option("--expr", "-e", help="experimental group")] = "experiment",
-    alpha: Annotated[float, typer.Option("--alpha", "-a", help="significance level")] = 0.05,
+    ctrl: Annotated[
+        str, typer.Option("--ctrl", "-c", help="control group")
+    ] = "control",
+    expr: Annotated[
+        str, typer.Option("--expr", "-e", help="experimental group")
+    ] = "experiment",
+    alpha: Annotated[
+        float, typer.Option("--alpha", "-a", help="significance level")
+    ] = 0.05,
     robust: Annotated[bool, typer.Option(help="use robust method")] = False,
 ):
     print(f"method: ftest, robust: {robust}")
@@ -99,8 +105,12 @@ def ftest(
 
 @app.command()
 def inner_var(
-    expr: Annotated[str, typer.Option("--expr", "-e", help="experimental group")] = "experiment",
-    threshold: Annotated[float, typer.Option("--threshold", "-t", help="threshold value")] = 2.0,
+    expr: Annotated[
+        str, typer.Option("--expr", "-e", help="experimental group")
+    ] = "experiment",
+    threshold: Annotated[
+        float, typer.Option("--threshold", "-t", help="threshold value")
+    ] = 2.0,
     robust: Annotated[bool, typer.Option(help="use robust method")] = False,
 ):
     print("method: inner-var")
@@ -146,9 +156,15 @@ def inner_var(
 
 @app.command()
 def levene(
-    ctrl: Annotated[str, typer.Option("--ctrl", "-c", help="control group")] = "control",
-    expr: Annotated[str, typer.Option("--expr", "-e", help="experimental group")] = "experiment",
-    alpha: Annotated[float, typer.Option("--alpha", "-a", help="significance level")] = 0.05,
+    ctrl: Annotated[
+        str, typer.Option("--ctrl", "-c", help="control group")
+    ] = "control",
+    expr: Annotated[
+        str, typer.Option("--expr", "-e", help="experimental group")
+    ] = "experiment",
+    alpha: Annotated[
+        float, typer.Option("--alpha", "-a", help="significance level")
+    ] = 0.05,
 ):
     pvals_corrected = None
     print("method: levene")
@@ -202,9 +218,15 @@ def levene(
 
 @app.command()
 def var_ratio(
-    ctrl: Annotated[str, typer.Option("--ctrl", "-c", help="control group")] = "control",
-    expr: Annotated[str, typer.Option("--expr", "-e", help="experimental group")] = "experiment",
-    threshold: Annotated[float, typer.Option("--threshold", "-t", help="threshold value")] = 2.0,
+    ctrl: Annotated[
+        str, typer.Option("--ctrl", "-c", help="control group")
+    ] = "control",
+    expr: Annotated[
+        str, typer.Option("--expr", "-e", help="experimental group")
+    ] = "experiment",
+    threshold: Annotated[
+        float, typer.Option("--threshold", "-t", help="threshold value")
+    ] = 2.0,
     robust: Annotated[bool, typer.Option(help="use robust method")] = False,
 ):
     print(f"method: var-ratio, robust: {robust}")
