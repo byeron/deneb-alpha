@@ -25,7 +25,7 @@ def callback(
     threshold: float = 2.0,
     fluctuation_method: str = "ftest",
     multiple_correction: bool = True,
-    multipletest_method: str = "fdr_bh",
+    multiple_correction_method: str = "fdr_bh",
     dissimilarity_method: str = "pearson",
     dissimilarity_metric: str = "abslinear",
     clustering_cutoff: float = 0.5,
@@ -39,7 +39,7 @@ def callback(
     fluctuation_input["method"] = fluctuation_method
     correction_input["multiple_correction"] = multiple_correction
     if multiple_correction:
-        correction_input["method"] = multipletest_method
+        correction_input["method"] = multiple_correction_method
     dissimilarity_input["method"] = dissimilarity_method
     dissimilarity_input["metric"] = dissimilarity_metric
     clustering_input["cutoff"] = clustering_cutoff
@@ -47,7 +47,7 @@ def callback(
     clustering_input["linkage_method"] = clustering_linkege_method
     clustering_input["criterion"] = clustering_criterion
     print(f"id: {id}")
-    print(f"multipletest: {multiple_correction}, method: {multipletest_method}")
+    print(f"multipletest: {multiple_correction}, method: {multiple_correction_method}")
 
 
 app = typer.Typer(callback=callback)

@@ -26,7 +26,7 @@ def callback(
     fluctuation_method: str = "ftest",
     fluctuation_threshold: float = 2.0,
     multiple_correction: bool = True,
-    multipletest_method: str = "fdr_bh",
+    multiple_correction_method: str = "fdr_bh",
 ):
     featuredata_input["id"] = id
     fluctuation_input["alpha"] = alpha
@@ -34,7 +34,7 @@ def callback(
     fluctuation_input["method"] = fluctuation_method
     correction_input["multiple_correction"] = multiple_correction
     if multiple_correction:
-        correction_input["method"] = multipletest_method
+        correction_input["method"] = multiple_correction_method
     print(f"id: {id}")
 
 
@@ -69,19 +69,19 @@ app = typer.Typer(callback=callback)
 
 @app.command()
 def correlation(
-    experiment: str = "experiment",
+    expr: str = "experiment",
     corr_method: str = "pearson",
     dissimilarity: str = "abslinear",
-    control: str = None,
+    ctrl: str = None,
 ):
     # handler生成
     get_file_handler, fluctuation_handler, correction_handler = factory_handlers(
-        experiment,
+        expr,
         fluctuation_input,
         correction_input,
-        control=control,
+        control=ctrl,
     )
-    factory = DissimilarityFactory(experiment, corr_method, dissimilarity)
+    factory = DissimilarityFactory(expr, corr_method, dissimilarity)
     injector = Injector(factory.configure)
     dissimilarity_handler = injector.get(IDissimilarity)
 
@@ -115,14 +115,14 @@ def correlation(
 
 @app.command()
 def clustering(
-    experiment: str = "experiment",
+    expr: str = "experiment",
     corr_method: str = "pearson",
     dissimilarity: str = "abslinear",
     cutoff: float = 0.5,
     rank: int = 1,
     linkage_method: str = "average",
     criterion: str = "distance",
-    control: str = None,
+    ctrl: str = None,
 ):
     # handler 生成
     factory = ClusteringFactory(cutoff, rank, linkage_method, criterion)
@@ -131,8 +131,8 @@ def clustering(
 
     # クラスタリング
     d = correlation(
-        control=control,
-        experiment=experiment,
+        control=ctrl,
+        experiment=expr,
         corr_method=corr_method,
         dissimilarity=dissimilarity,
     )
