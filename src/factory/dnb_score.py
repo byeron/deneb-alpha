@@ -1,15 +1,15 @@
-from injector import Module, Injector
+from injector import Injector, Module
 
 from domain.interface.clustering import IClustering
 from domain.interface.dissimilarity import IDissimilarity
 from domain.interface.dnb_score import IDNBScore
 from domain.interface.fluctuation import IFluctuation
 from domain.interface.multiple_correction import IMultipleCorrection
-from usecase.dnb_score import DNBScore
-from factory.fluctuation import FluctuationFactory
+from factory.clustering import ClusteringFactory
 from factory.correction import CorrectionFactory
 from factory.dissimilarity import DissimilarityFactory
-from factory.clustering import ClusteringFactory
+from factory.fluctuation import FluctuationFactory
+from usecase.dnb_score import DNBScore
 
 
 class DNBScoreFactory(Module):
@@ -66,10 +66,11 @@ class DNBScoreFactory(Module):
 
     def configure(self, binder):
         binder.bind(
-            IDNBScore, to=DNBScore(
+            IDNBScore,
+            to=DNBScore(
                 self.fluctuation_handler,
                 self.correction_handler,
                 self.dissimilarity_handler,
                 self.clustering_handler,
-            )
+            ),
         )

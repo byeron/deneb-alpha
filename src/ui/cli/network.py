@@ -1,6 +1,9 @@
-import typer_cloup as typer
+import typer
 from injector import Injector
+from typing_extensions import Annotated
 
+from domain.dissimilarity_metric import DissimilarityMetric
+from domain.fluctuation_method import FluctuationMethod
 from domain.interface.clustering import IClustering
 from domain.interface.dissimilarity import IDissimilarity
 from domain.interface.fluctuation import IFluctuation
@@ -21,12 +24,25 @@ correction_input = {"multiple_correction": True, "method": "fdr_bh"}
 
 
 def callback(
-    id: str,
-    alpha: float = 0.05,
-    fluctuation_method: str = "ftest",
-    fluctuation_threshold: float = 2.0,
-    multiple_correction: bool = True,
-    multipletest_method: str = "fdr_bh",
+    id: Annotated[str, typer.Argument(...)],
+    alpha: Annotated[
+        float, typer.Option("--alpha", "-a", help="Significance level")
+    ] = 0.05,
+    fluctuation_method: Annotated[
+        FluctuationMethod,
+        typer.Option("--fluctuation-method", "-fm", help="Fluctuation method"),
+    ] = FluctuationMethod.ftest,
+    fluctuation_threshold: Annotated[
+        float,
+        typer.Option("--fluctuation-threshold", "-ft", help="Fluctuation threshold"),
+    ] = 2.0,
+    multiple_correction: Annotated[bool, typer.Option()] = True,
+    multiple_correction_method: Annotated[
+        str,
+        typer.Option(
+            "--multiple-correction-method", "-mm", help="Multiple correction method"
+        ),
+    ] = "fdr_bh",
 ):
     featuredata_input["id"] = id
     fluctuation_input["alpha"] = alpha
@@ -34,7 +50,7 @@ def callback(
     fluctuation_input["method"] = fluctuation_method
     correction_input["multiple_correction"] = multiple_correction
     if multiple_correction:
-        correction_input["method"] = multipletest_method
+        correction_input["method"] = multiple_correction_method
     print(f"id: {id}")
 
 
@@ -69,19 +85,26 @@ app = typer.Typer(callback=callback)
 
 @app.command()
 def correlation(
-    experiment: str = "experiment",
-    corr_method: str = "pearson",
-    dissimilarity: str = "abslinear",
-    control: str = None,
+    expr: Annotated[
+        str, typer.Option("--expr", "-e", help="experimental group")
+    ] = "experiment",
+    corr_method: Annotated[
+        str, typer.Option("--corr-method", "-cm", help="correlation method")
+    ] = "pearson",
+    dissimilarity: Annotated[
+        DissimilarityMetric,
+        typer.Option("--dissimilarity", "-d", help="dissimilarity method"),
+    ] = DissimilarityMetric.abslinear,
+    ctrl: Annotated[str, typer.Option("--ctrl", "-c", help="control group")] = None,
 ):
     # handler生成
     get_file_handler, fluctuation_handler, correction_handler = factory_handlers(
-        experiment,
+        expr,
         fluctuation_input,
         correction_input,
-        control=control,
+        control=ctrl,
     )
-    factory = DissimilarityFactory(experiment, corr_method, dissimilarity)
+    factory = DissimilarityFactory(expr, corr_method, dissimilarity)
     injector = Injector(factory.configure)
     dissimilarity_handler = injector.get(IDissimilarity)
 
@@ -115,14 +138,27 @@ def correlation(
 
 @app.command()
 def clustering(
-    experiment: str = "experiment",
-    corr_method: str = "pearson",
-    dissimilarity: str = "abslinear",
-    cutoff: float = 0.5,
-    rank: int = 1,
-    linkage_method: str = "average",
-    criterion: str = "distance",
-    control: str = None,
+    expr: Annotated[
+        str, typer.Option("--expr", "-e", help="experimental group")
+    ] = "experiment",
+    corr_method: Annotated[
+        str, typer.Option("--corr-method", "-cm", help="correlation method")
+    ] = "pearson",
+    dissimilarity: Annotated[
+        DissimilarityMetric,
+        typer.Option("--dissimilarity", "-d", help="dissimilarity method"),
+    ] = DissimilarityMetric.abslinear,
+    cutoff: Annotated[
+        float, typer.Option("--cutoff", "-co", help="cutoff value")
+    ] = 0.5,
+    rank: Annotated[int, typer.Option("--rank", "-r", help="rank value")] = 1,
+    linkage_method: Annotated[
+        str, typer.Option("--linkage-method", "-lm", help="linkage method")
+    ] = "average",
+    criterion: Annotated[
+        str, typer.Option("--criterion", "-cr", help="criterion method")
+    ] = "distance",
+    ctrl: Annotated[str, typer.Option("--ctrl", "-c", help="control group")] = None,
 ):
     # handler 生成
     factory = ClusteringFactory(cutoff, rank, linkage_method, criterion)
@@ -131,8 +167,8 @@ def clustering(
 
     # クラスタリング
     d = correlation(
-        control=control,
-        experiment=experiment,
+        ctrl=ctrl,
+        expr=expr,
         corr_method=corr_method,
         dissimilarity=dissimilarity,
     )

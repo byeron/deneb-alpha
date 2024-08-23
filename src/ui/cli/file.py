@@ -1,4 +1,4 @@
-import typer_cloup as typer
+import typer
 from injector import Injector
 
 from domain.interface.delete_file import IDeleteFile
