@@ -3,8 +3,10 @@ from injector import Injector
 
 from domain.interface.delete_file import IDeleteFile
 from domain.interface.get_files import IGetFiles
+from domain.interface.get_file import IGetFile
 from domain.interface.register_file import IRegisterFile
 from factory.delete_file import DeleteFileFactory
+from factory.get_file import GetFileFactory
 from factory.get_files import GetFilesFactory
 from factory.register_file import RegisterFileFactory
 
@@ -57,6 +59,29 @@ def delete(file_id: str) -> None:
         print(e)
         return
     print(f"File ID: {_id}")
+
+
+@app.command()
+def show(file_id: str) -> None:
+    factory = GetFileFactory()
+    injector = Injector(factory.configure)
+    get_file_handler = injector.get(IGetFile)
+
+    feature_data = get_file_handler.run(file_id)
+    if not feature_data:
+        print("File not found.")
+        return
+
+    print(f"ID: {feature_data.file_id}")
+    for t, d in feature_data._matrix.groupby(level=0):
+        print(f"Index: {t}")
+        print(d)
+
+    print("Matrix:")
+    print(f"{feature_data._matrix}")
+    print("Index:")
+    print(f"{list(feature_data._matrix.index.unique())}")
+
 
 
 if __name__ == "__main__":
