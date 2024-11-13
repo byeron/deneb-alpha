@@ -73,12 +73,8 @@ app = typer.Typer(callback=callback)
 
 @app.command()
 def score(
-    experiment: Annotated[
-        str, typer.Option("--expr", "-e")
-    ] = "experiment",
-    control: Annotated[
-        str, typer.Option("--ctrl", "-c")
-    ] = "control",
+    experiment: Annotated[str, typer.Option("--expr", "-e")] = "experiment",
+    control: Annotated[str, typer.Option("--ctrl", "-c")] = "control",
 ):
     # handler生成
     factory = GetFileFactory()
