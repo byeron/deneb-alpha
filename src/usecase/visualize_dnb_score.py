@@ -6,6 +6,13 @@ import pandas as pd
 import yaml
 
 
+def set_default(param, _default):
+    if param is None:
+        return _default
+    else:
+        return param
+
+
 class VDNBScore:
     def __init__(self, config_path: str):
         with open(config_path, "r") as f:
@@ -14,79 +21,95 @@ class VDNBScore:
         self.img_dir = data["img_dir"]
         self.img_path = None
 
-    def common(self, data, nn):
-        figsize = (9, 3)
+    def plot(self, data, figparam, nth):
+        sizex = set_default(figparam["common"].sizex, 12)
+        sizey = set_default(figparam["common"].sizey, 4)
+        rotx = set_default(figparam["common"].rotx, 0)
+        roty = set_default(figparam["common"].roty, 0)
+        xticklabelsize = set_default(figparam["common"].xticklabelsize, None)
+        yticklabelsize = set_default(figparam["common"].yticklabelsize, None)
+        xlabelsize = set_default(figparam["common"].xlabelsize, None)
+        ylabelsize = set_default(figparam["common"].ylabelsize, None)
+        xlabel = set_default(figparam["common"].xlabel, "States")
+        score_min = set_default(figparam["score"].score_min, None)
+        score_max = set_default(figparam["score"].score_max, None)
+        std_min = set_default(figparam["score"].std_min, None)
+        std_max = set_default(figparam["score"].std_max, None)
+        corr_min = set_default(figparam["score"].corr_min, None)
+        corr_max = set_default(figparam["score"].corr_max, None)
+
+        figsize = (sizex, sizey)
         dpi = 300
 
         fig = plt.figure(figsize=figsize, dpi=dpi)
 
+        # Plot DNB score
         d = data.loc["dnb_score", :]
         ax = fig.add_subplot(1, 3, 1)
-        ax.plot(d.to_numpy(), color="tab:red", marker="o")
-        ax.set_ylabel("DNB Score")
-        ax.set_xticks([n for n, _ in enumerate(d.index)])
-        ax.set_xticklabels(list(d.index))
-        ax.set_xlabel("state")
+        ax.plot(d.index, d, color="tab:red", marker="o")
+
+        ax.set_xlabel(xlabel, fontsize=xlabelsize)
+        ax.set_ylabel("$I_{\mathrm{DNB}}$", fontsize=ylabelsize)
+        ax.tick_params(axis="x", labelsize=xticklabelsize, labelrotation=rotx)
+        ax.tick_params(axis="y", labelsize=yticklabelsize, labelrotation=roty)
+        ax.set_ylim(score_min, score_max)
         ax.grid(which="both", axis="both")
 
+        # Plot Mean Standard Deviation
         d = data.loc["std_deviation", :]
         ax = fig.add_subplot(1, 3, 2)
-        ax.plot(d.to_numpy(), color="tab:blue", marker="o")
-        ax.set_ylabel("Average Std")
-        ax.set_xticks([n for n, _ in enumerate(d.index)])
-        ax.set_xticklabels(list(d.index))
-        ax.set_xlabel("state")
+        ax.plot(d.index, d, color="tab:blue", marker="o")
+
+        ax.set_xlabel(xlabel, fontsize=xlabelsize)
+        ax.set_ylabel("$I_{\mathrm{s}}$", fontsize=ylabelsize)
+        ax.tick_params(axis="x", labelsize=xticklabelsize, labelrotation=rotx)
+        ax.tick_params(axis="y", labelsize=yticklabelsize, labelrotation=roty)
+        ax.set_ylim(std_min, std_max)
         ax.grid(which="both", axis="both")
 
+        # Plot Mean Correlation Strength
         d = data.loc["corr_strength", :]
         ax = fig.add_subplot(1, 3, 3)
-        ax.plot(d.to_numpy(), color="tab:purple", marker="o")
-        ax.set_ylabel("Average Corr")
-        ax.set_xticks([n for n, _ in enumerate(d.index)])
-        ax.set_xticklabels(list(d.index))
-        ax.set_xlabel("state")
-        # ax.set_ylim(-1, 1)
+        ax.plot(d.index, d, color="tab:purple", marker="o")
+
+        ax.set_xlabel(xlabel, fontsize=xlabelsize)
+        ax.set_ylabel("$I_{\mathrm{r}}$", fontsize=ylabelsize)
+        ax.tick_params(axis="x", labelsize=xticklabelsize, labelrotation=rotx)
+        ax.tick_params(axis="y", labelsize=yticklabelsize, labelrotation=roty)
+        ax.set_ylim(corr_min, corr_max)
         ax.grid(which="both", axis="both")
 
         plt.tight_layout()
-        fig.savefig(f"{self.img_path}/score_{nn}.png")
-        fig.savefig(f"{self.img_path}/score_{nn}.pdf")
+        fig.savefig(f"{self.img_path}/score_{nth}.png")
+        fig.savefig(f"{self.img_path}/score_{nth}.pdf")
 
-    def with_order(self, score, order, output_dir):
-        if len(list(score[0]["dnb_score"].keys())) != len(order):
-            raise ValueError("number of states is incorrect")
+    def preprocess(self, scores: list, order: list, ignore_state: list, output_dir: str = "./output"):
 
-        for e in list(score[0]["dnb_score"].keys()):
-            if e not in order:
-                raise ValueError("state name is incorrect")
+        data = []
+        for nth, score in enumerate(scores):
+            _ = score.pop("features")
+            d = pd.DataFrame.from_dict(score, orient="index")
 
-        for nn, s in enumerate(score):
-            _ = s.pop("features")
-            data = pd.DataFrame.from_dict(s, orient="index")
-            data = data.reindex(columns=order)
+            if ignore_state:  # もしオプションにより無視する状態があれば取り除く
+                for _is in ignore_state:
+                    if _is not in d.columns:
+                        raise ValueError("ignore state name is incorrect")
+                d = d.drop(columns=ignore_state)
 
-            self.common(data, nn)
+            if order:  # もしオプションによる順序の指定があれば並び替える
+                if len(d.columns) != len(order):
+                    raise ValueError("number of states is incorrect")
+                for o in order:
+                    if o not in d.columns:
+                        raise ValueError("state name is incorrect")
 
-    def without_order(self, score, output_dir):
-        for nn, s in enumerate(score):
-            _ = s.pop("features")
-            data = pd.DataFrame.from_dict(s, orient="index")
-            self.common(data, nn)
+                d = d.reindex(columns=order)
 
-    def plot(self, score: list, order: list, output_dir: str = "./output"):
-        if order:
-            try:
-                self.with_order(score, order, output_dir)
-            except Exception as e:
-                print(e)
-                return
+            print(d)
+            data.append(d)
+        return data
 
-        else:
-            self.without_order(score, output_dir)
-
-        return
-
-    def run(self, _id: str, order: list = []) -> None:
+    def run(self, _id: str, figparam: dict,  order: list = [], ignore_state: list = []) -> None:
         self.img_path = f"{self.img_dir}/{_id}"
 
         os.makedirs(self.img_path, exist_ok=True)
@@ -94,8 +117,10 @@ class VDNBScore:
         # get medium file
         with open(f"{self.medium_dir}/{_id}/score.json") as f:
             d = json.load(f)
-        self.plot(d, order)
+        data = self.preprocess(d, order, ignore_state)
+
+        for nth, d in enumerate(data, start=1):
+            self.plot(d, figparam, nth)
 
         print(self.img_path)
-
         return
