@@ -1,6 +1,7 @@
 import json
 import os
 
+from matplotlib.ticker import MultipleLocator
 import matplotlib.pyplot as plt
 import pandas as pd
 import yaml
@@ -28,6 +29,7 @@ class VDNBScore:
         roty = set_default(figparam["common"].roty, 0)
         xticklabelsize = set_default(figparam["common"].xticklabelsize, None)
         yticklabelsize = set_default(figparam["common"].yticklabelsize, None)
+        title = set_default(figparam["common"].title, None)
         xlabelsize = set_default(figparam["common"].xlabelsize, None)
         ylabelsize = set_default(figparam["common"].ylabelsize, None)
         xlabel = set_default(figparam["common"].xlabel, "States")
@@ -37,6 +39,8 @@ class VDNBScore:
         std_max = set_default(figparam["score"].std_max, None)
         corr_min = set_default(figparam["score"].corr_min, None)
         corr_max = set_default(figparam["score"].corr_max, None)
+        xgridmajfreq = set_default(figparam["score"].xgridmajfreq, None)
+        xgridminfreq = set_default(figparam["score"].xgridminfreq, None)
 
         figsize = (sizex, sizey)
         dpi = 300
@@ -52,20 +56,31 @@ class VDNBScore:
         ax.set_ylabel("$I_{\mathrm{DNB}}$", fontsize=ylabelsize)
         ax.tick_params(axis="x", labelsize=xticklabelsize, labelrotation=rotx)
         ax.tick_params(axis="y", labelsize=yticklabelsize, labelrotation=roty)
+        ax.tick_params(axis="both", which="both", direction="in")
         ax.set_ylim(score_min, score_max)
         ax.grid(which="both", axis="both")
+        if xgridmajfreq is not None:
+            ax.xaxis.set_major_locator(MultipleLocator(xgridmajfreq))
+            if xgridminfreq is not None:
+                ax.xaxis.set_minor_locator(MultipleLocator(xgridminfreq))
 
         # Plot Mean Standard Deviation
         d = data.loc["std_deviation", :]
         ax = fig.add_subplot(1, 3, 2)
         ax.plot(d.index, d, color="tab:blue", marker="o")
 
+        ax.set_title(title)
         ax.set_xlabel(xlabel, fontsize=xlabelsize)
         ax.set_ylabel("$I_{\mathrm{s}}$", fontsize=ylabelsize)
         ax.tick_params(axis="x", labelsize=xticklabelsize, labelrotation=rotx)
         ax.tick_params(axis="y", labelsize=yticklabelsize, labelrotation=roty)
+        ax.tick_params(axis="both", which="both", direction="in")
         ax.set_ylim(std_min, std_max)
         ax.grid(which="both", axis="both")
+        if xgridmajfreq is not None:
+            ax.xaxis.set_major_locator(MultipleLocator(xgridmajfreq))
+            if xgridminfreq is not None:
+                ax.xaxis.set_minor_locator(MultipleLocator(xgridminfreq))
 
         # Plot Mean Correlation Strength
         d = data.loc["corr_strength", :]
@@ -76,14 +91,20 @@ class VDNBScore:
         ax.set_ylabel("$I_{\mathrm{r}}$", fontsize=ylabelsize)
         ax.tick_params(axis="x", labelsize=xticklabelsize, labelrotation=rotx)
         ax.tick_params(axis="y", labelsize=yticklabelsize, labelrotation=roty)
+        ax.tick_params(axis="both", which="both", direction="in")
         ax.set_ylim(corr_min, corr_max)
         ax.grid(which="both", axis="both")
+        if xgridmajfreq is not None:
+            ax.xaxis.set_major_locator(MultipleLocator(xgridmajfreq))
+            if xgridminfreq is not None:
+                ax.xaxis.set_minor_locator(MultipleLocator(xgridminfreq))
 
+        # Output per clusters
         plt.tight_layout()
         fig.savefig(f"{self.img_path}/score_{nth}.png")
         fig.savefig(f"{self.img_path}/score_{nth}.pdf")
 
-    def preprocess(self, scores: list, order: list, ignore_state: list, output_dir: str = "./output"):
+    def preprocess(self, scores: list, order: list, ignore_state: list, unit: str, output_dir: str = "./output"):
 
         data = []
         for nth, score in enumerate(scores):
@@ -105,11 +126,16 @@ class VDNBScore:
 
                 d = d.reindex(columns=order)
 
+            if unit is not None:
+                # unitの文字列をcolumnsから取り除き、整数型にする
+                # 時系列データの場合は不等間隔のデータがきれいに描画できる
+                d.columns = [int(c.replace(unit, "")) for c in d.columns]
+
             print(d)
             data.append(d)
         return data
 
-    def run(self, _id: str, figparam: dict,  order: list = [], ignore_state: list = []) -> None:
+    def run(self, _id: str, figparam: dict,  order: list = [], ignore_state: list = [], unit: str = None) -> None:
         self.img_path = f"{self.img_dir}/{_id}"
 
         os.makedirs(self.img_path, exist_ok=True)
@@ -117,7 +143,7 @@ class VDNBScore:
         # get medium file
         with open(f"{self.medium_dir}/{_id}/score.json") as f:
             d = json.load(f)
-        data = self.preprocess(d, order, ignore_state)
+        data = self.preprocess(d, order, ignore_state, unit)
 
         for nth, d in enumerate(data, start=1):
             self.plot(d, figparam, nth)
