@@ -48,9 +48,15 @@ class ScoreFigParam:
 
 @dataclass
 class HeatmapFigParam:
-    title: str = None
-    xlabel: str = None
-    ylabel: str = None
+    vmin: float = None
+    vmax: float = None
+    labelfreq: int = None
+    nrows: int = None
+    ncols: int = None
+    cmap: str = None
+    cbar_loc: str = None
+    cbar_size: float = None
+    ax_pad: float = None
 
 
 def callback(
@@ -109,6 +115,27 @@ def callback(
     xgridminfreq: Annotated[
         Optional[int], typer.Option(help="Minor grid frequency [DNB score]")
     ] = None,
+    vmin: Annotated[Optional[float], typer.Option(help="vmin [Heatmap]")] = None,
+    vmax: Annotated[Optional[float], typer.Option(help="vmax [Heatmap]")] = None,
+    labelfreq: Annotated[
+        Optional[int], typer.Option(help="label frequency [Heatmap]")
+    ] = 5,
+    nrows: Annotated[
+        Optional[int], typer.Option(help="number of rows [Heatmap]")
+    ] = None,
+    ncols: Annotated[
+        Optional[int], typer.Option(help="number of cols [Heatmap]")
+    ] = None,
+    cmap: Annotated[Optional[str], typer.Option(help="color map [Heatmap]")] = "RdBu_r",
+    cbar_loc: Annotated[
+        Optional[str], typer.Option(help="color bar location [Heatmap]")
+    ] = "bottom",
+    cbar_size: Annotated[
+        Optional[float], typer.Option(help="color bar size [Heatmap]")
+    ] = 2.5,
+    ax_pad: Annotated[
+        Optional[float], typer.Option(help="padding between each axes [Heatmap]")
+    ] = 0.15,
 ):
     featuredata_input["id"] = id
 
@@ -140,9 +167,15 @@ def callback(
         xgridminfreq=xgridminfreq,
     )
     hfp = HeatmapFigParam(
-        title=title,
-        xlabel=xlabel,
-        ylabel=ylabel,
+        vmax=vmax,
+        vmin=vmin,
+        labelfreq=labelfreq,
+        nrows=nrows,
+        ncols=ncols,
+        cmap=cmap,
+        cbar_loc=cbar_loc,
+        cbar_size=f"{cbar_size}%",
+        ax_pad=ax_pad,
     )
     print(dfp)
     ctx.obj = {"common": cfp, "dendrogram": dfp, "score": sfp, "heatmap": hfp}
@@ -165,8 +198,8 @@ def dendrogram(
 @app.command()
 def score(
     ctx: typer.Context,
-    state: Annotated[
-        Optional[list[str]], typer.Option("--state", "-s", help="order state")
+    order: Annotated[
+        Optional[list[str]], typer.Option("--order", "-o", help="order state")
     ] = None,
     ignore_state: Annotated[
         Optional[list[str]], typer.Option("--ignore-state", "-ign", help="ignore state")
@@ -175,22 +208,28 @@ def score(
         Optional[str], typer.Option("--unit", "-u", help="ignore state")
     ] = None,
 ):
-    print(f"state order: {state}")
+    print(f"order: {order}")
     print(f"ignore state: {ignore_state}")
     v = VDNBScore("./src/config.yml")
-    v.run(featuredata_input["id"], ctx.obj, order=state, ignore_state=ignore_state, unit=unit)
+    v.run(
+        featuredata_input["id"],
+        ctx.obj,
+        order=order,
+        ignore_state=ignore_state,
+        unit=unit,
+    )
 
 
 @app.command()
 def heatmap(
-    state: Optional[List[str]] = typer.Option(None),
-    vmin: float = -1.0,
-    vmax: float = 1.0,
-    label_span: int = 5,
+    ctx: typer.Context,
+    order: Annotated[
+        Optional[list[str]], typer.Option("--order", "-o", help="order state")
+    ] = None,
 ):
     v = VHeatmap("./src/config.yml")
     try:
-        v.run(featuredata_input["id"], state, vmin, vmax, label_span)
+        v.run(featuredata_input["id"], ctx.obj, order)
     except Exception as e:
         print(e)
         return
