@@ -27,6 +27,8 @@ class VDendrogram:
         sizex = set_default(figparam["common"].sizex, 9)
         sizey = set_default(figparam["common"].sizey, 9)
         rotx = set_default(figparam["common"].rotx, 0)
+        title = set_default(figparam["common"].title, f"cutoff: {cutoff}")
+        titlesize = set_default(figparam["common"].titlesize, None)
         xticklabelsize = set_default(figparam["common"].xticklabelsize, None)
         yticklabelsize = set_default(figparam["common"].yticklabelsize, None)
         xlabelsize = set_default(figparam["common"].xlabelsize, None)
@@ -51,7 +53,7 @@ class VDendrogram:
         )
 
         # Set plot param
-        ax.set_title(f"cutoff: {cutoff}")
+        ax.set_title(title, fontsize=titlesize)
         ax.set_xlabel(xlabel, fontsize=xlabelsize)
         ax.set_ylabel(ylabel, fontsize=ylabelsize)
         ax.tick_params(axis="y", labelsize=yticklabelsize)

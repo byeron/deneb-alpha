@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List, Optional
+from typing import Optional
 
 import typer
 from typing_extensions import Annotated
@@ -18,6 +18,7 @@ class CommonFigParam:
     rotx: float
     roty: float
     title: str = None
+    titlesize: str = None
     xlabel: str = None
     ylabel: str = None
     xticklabelsize: float = None
@@ -71,6 +72,7 @@ def callback(
         Optional[float], typer.Option(help="rotation of yticklabels")
     ] = None,
     title: Annotated[Optional[str], typer.Option(help="figure title")] = None,
+    titlesize: Annotated[Optional[float], typer.Option(help="figure title size")] = None,
     xlabel: Annotated[Optional[str], typer.Option(help="x-axis label")] = None,
     ylabel: Annotated[Optional[str], typer.Option(help="y-axis label")] = None,
     xticklabelsize: Annotated[
@@ -145,6 +147,7 @@ def callback(
         rotx=rotx,
         roty=roty,
         title=title,
+        titlesize=titlesize,
         xlabel=xlabel,
         ylabel=ylabel,
         xticklabelsize=xticklabelsize,

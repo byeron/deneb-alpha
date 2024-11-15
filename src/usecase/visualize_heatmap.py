@@ -31,6 +31,7 @@ class VHeatmap:
         xticklabelsize = set_default(figparam["common"].xticklabelsize, None)
         yticklabelsize = set_default(figparam["common"].yticklabelsize, None)
         title = set_default(figparam["common"].title, None)
+        titlesize = set_default(figparam["common"].titlesize, None)
         xlabelsize = set_default(figparam["common"].xlabelsize, None)
         ylabelsize = set_default(figparam["common"].ylabelsize, None)
         xlabel = set_default(figparam["common"].xlabel, "Features")
@@ -43,7 +44,7 @@ class VHeatmap:
         ncols = set_default(figparam["heatmap"].ncols, len(df.index.unique()))
         cbar_loc = set_default(figparam["heatmap"].cbar_loc, "bottom")
         cbar_size = set_default(figparam["heatmap"].cbar_size, "2.5%")
-        axes_pad = set_default(figparam["heatmap"].axes_pad, 0.15)
+        ax_pad = set_default(figparam["heatmap"].ax_pad, 0.15)
 
         # データの表示順を指定したものに並び替える
         corrs = OrderedDict()
@@ -75,7 +76,7 @@ class VHeatmap:
             nrows_ncols=(nrows, ncols),
             cbar_location=cbar_loc,
             cbar_mode="single",
-            axes_pad=axes_pad,
+            axes_pad=ax_pad,
             cbar_size=cbar_size,
         )
         fig.canvas.draw()
@@ -116,7 +117,7 @@ class VHeatmap:
                 labelsize=yticklabelsize,
             )
 
-            ax.set_title(f"{k}")
+            ax.set_title(f"{k}", fontsize=titlesize)
             ax.tick_params(which="both", axis="both", direction="in")
 
         _ = grid.cbar_axes[0].colorbar(im)

@@ -1,10 +1,10 @@
 import json
 import os
 
-from matplotlib.ticker import MultipleLocator
 import matplotlib.pyplot as plt
 import pandas as pd
 import yaml
+from matplotlib.ticker import MultipleLocator
 
 
 def set_default(param, _default):
@@ -30,6 +30,7 @@ class VDNBScore:
         xticklabelsize = set_default(figparam["common"].xticklabelsize, None)
         yticklabelsize = set_default(figparam["common"].yticklabelsize, None)
         title = set_default(figparam["common"].title, None)
+        titlesize = set_default(figparam["common"].titlesize, None)
         xlabelsize = set_default(figparam["common"].xlabelsize, None)
         ylabelsize = set_default(figparam["common"].ylabelsize, None)
         xlabel = set_default(figparam["common"].xlabel, "States")
@@ -69,7 +70,7 @@ class VDNBScore:
         ax = fig.add_subplot(1, 3, 2)
         ax.plot(d.index, d, color="tab:blue", marker="o")
 
-        ax.set_title(title)
+        ax.set_title(title, fontsize=titlesize)
         ax.set_xlabel(xlabel, fontsize=xlabelsize)
         ax.set_ylabel("$I_{\mathrm{s}}$", fontsize=ylabelsize)
         ax.tick_params(axis="x", labelsize=xticklabelsize, labelrotation=rotx)
@@ -104,8 +105,14 @@ class VDNBScore:
         fig.savefig(f"{self.img_path}/score_{nth}.png")
         fig.savefig(f"{self.img_path}/score_{nth}.pdf")
 
-    def preprocess(self, scores: list, order: list, ignore_state: list, unit: str, output_dir: str = "./output"):
-
+    def preprocess(
+        self,
+        scores: list,
+        order: list,
+        ignore_state: list,
+        unit: str,
+        output_dir: str = "./output",
+    ):
         data = []
         for nth, score in enumerate(scores):
             _ = score.pop("features")
@@ -135,7 +142,14 @@ class VDNBScore:
             data.append(d)
         return data
 
-    def run(self, _id: str, figparam: dict,  order: list = [], ignore_state: list = [], unit: str = None) -> None:
+    def run(
+        self,
+        _id: str,
+        figparam: dict,
+        order: list = [],
+        ignore_state: list = [],
+        unit: str = None,
+    ) -> None:
         self.img_path = f"{self.img_dir}/{_id}"
 
         os.makedirs(self.img_path, exist_ok=True)
