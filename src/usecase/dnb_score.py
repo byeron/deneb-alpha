@@ -59,5 +59,4 @@ class DNBScore(IDNBScore):
                     "features": c,
                 }
             )
-
         return result
