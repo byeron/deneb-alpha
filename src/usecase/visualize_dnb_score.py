@@ -101,7 +101,7 @@ class VDNBScore:
                 ax.xaxis.set_minor_locator(MultipleLocator(xgridminfreq))
 
         # Output per clusters
-        plt.tight_layout()
+        fig.tight_layout()
         fig.savefig(f"{self.img_path}/score_{nth}.png")
         fig.savefig(f"{self.img_path}/score_{nth}.pdf")
 

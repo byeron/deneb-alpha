@@ -44,7 +44,7 @@ class VHeatmap:
         ncols = set_default(figparam["heatmap"].ncols, len(df.index.unique()))
         cbar_loc = set_default(figparam["heatmap"].cbar_loc, "bottom")
         cbar_size = set_default(figparam["heatmap"].cbar_size, "2.5%")
-        ax_pad = set_default(figparam["heatmap"].ax_pad, 0.15)
+        ax_pad = set_default(figparam["heatmap"].ax_pad, 0.2)
 
         # データの表示順を指定したものに並び替える
         corrs = OrderedDict()
