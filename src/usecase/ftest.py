@@ -46,7 +46,11 @@ class Ftest(Fluctuation):
             )
 
         f_value = experiment_var / control_var
-        p_value = f.sf(f_value, dfn=(len(experiment) - 1), dfd=(len(control) - 1))
+
+        # NaN 以外の有効な変数を自由度とする
+        dfn = experiment.count() - 1
+        dfd = control.count() - 1
+        p_value = f.sf(f_value, dfn=dfn, dfd=dfd)
         reject = [p_value < self.alpha for p_value in p_value]
 
         return (p_value, reject)

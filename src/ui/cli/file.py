@@ -2,8 +2,8 @@ import typer
 from injector import Injector
 
 from domain.interface.delete_file import IDeleteFile
-from domain.interface.get_files import IGetFiles
 from domain.interface.get_file import IGetFile
+from domain.interface.get_files import IGetFiles
 from domain.interface.register_file import IRegisterFile
 from factory.delete_file import DeleteFileFactory
 from factory.get_file import GetFileFactory
@@ -81,7 +81,6 @@ def show(file_id: str) -> None:
     print(f"{feature_data._matrix}")
     print("Index:")
     print(f"{list(feature_data._matrix.index.unique())}")
-
 
 
 if __name__ == "__main__":
